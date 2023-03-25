@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../datastore/products"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL_PRODUCT")
+}
+
+model Products {
+    id           String               @id @default(uuid()) @map("_id")
+    name         String               @unique
+    sku          String               @unique
+    bar_code     String               @unique
+    amount       Int                  @default(0)
+    cost         Int                  @default(0)
+    price        Int                  @default(0)
+    create_date  DateTime             @default(now())
+    update_date  DateTime             @updatedAt
+    deleted_date DateTime?
+    is_deleted   Boolean              @default(false)
+    user_create  String
+    user_update  String
+    StockDetail  StokProductsDetail[]
+}
+
+model StokProducts {
+    id          String               @id @default(uuid()) @map("_id")
+    stock_code  String               @unique
+    status      StatusStockProducts  @default(Draft)
+    Detail      StokProductsDetail[]
+    create_date DateTime             @default(now())
+    update_date DateTime             @updatedAt
+    user_crate  String
+    user_update String
+}
+
+model StokProductsDetail {
+    id              String       @id @default(uuid()) @map("_id")
+    StokProducts    StokProducts @relation(fields: [stokProductsId], references: [id])
+    stokProductsId  String
+    Products        Products     @relation(fields: [productsId], references: [id])
+    productsId      String
+    amont_new_stock Int
+    cost_new        Int
+    amont_old_stock Int
+    cost_old        Int
+}
+
+enum StatusStockProducts {
+    Draft
+    Complate
+    Restore
+    Cancle
+}

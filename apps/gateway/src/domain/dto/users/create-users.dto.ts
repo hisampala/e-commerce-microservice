@@ -2,10 +2,10 @@ import { z } from "zod";
 import { extendApi, generateSchema } from "@anatine/zod-openapi";
 import { createZodDto } from "@anatine/zod-nestjs";
 import { hashSync } from "@node-rs/argon2";
-export const ZCreateUsersDto = z.object({
+const ZCreateUsersDto = z.object({
   first_name: z.string().min(1),
   last_name: z.string().min(1),
-  email: z.string().min(1),
+  email: z.string().min(1).email(),
   password: z
     .string()
     .min(1)

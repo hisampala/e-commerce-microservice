@@ -1,4 +1,28 @@
 import { ApiProperty } from "@nestjs/swagger";
+export class Address {
+  @ApiProperty()
+  address: string;
+  @ApiProperty()
+  subdistrict: string;
+  @ApiProperty()
+  district: string;
+  @ApiProperty()
+  province: string;
+  @ApiProperty()
+  post_code: string;
+}
+export class DeliveryAddress {
+  @ApiProperty()
+  address: string;
+  @ApiProperty()
+  subdistrict: string;
+  @ApiProperty()
+  district: string;
+  @ApiProperty()
+  province: string;
+  @ApiProperty()
+  post_code: string;
+}
 
 export class ItemUsers {
   @ApiProperty()
@@ -17,4 +41,8 @@ export class ItemUsers {
   addressId: string;
   @ApiProperty()
   deliveryAddressId: string;
+  @ApiProperty({ type: Address })
+  Address: Address;
+  @ApiProperty({ type: DeliveryAddress })
+  deliveryAddress: DeliveryAddress;
 }

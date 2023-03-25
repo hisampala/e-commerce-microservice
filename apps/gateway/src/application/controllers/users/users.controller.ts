@@ -6,17 +6,18 @@ import {
   Inject,
   Param,
   Put,
+  UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { ControllerPath, ServiceProxy } from "@common/core";
-import { IUsersProxyService } from "../../../domain/service/users-proxy/users-proxy.service";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { ItemUsers } from "../../../domain/dto/users/item-users.dto";
-import { Post } from "@nestjs/common";
 import {
-  CreateUsersSchema,
-  CreateUsersDto,
-} from "../../../domain/dto/users/create-users.dto";
+  ControllerPath,
+  GetUserId,
+  JwtAuthGuard,
+  ServiceProxy,
+} from "@common/core";
+import { IUsersProxyService } from "../../../domain/service/users-proxy/users-proxy.service";
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ItemUsers } from "../../../domain/dto/users/item-users.dto";
 import { ZodValidationPipe } from "@anatine/zod-nestjs";
 import {
   UpdateUsersDto,
@@ -31,34 +32,25 @@ export class UsersController {
     @Inject(ServiceProxy.Users)
     private readonly service: IUsersProxyService,
   ) {}
-  @Get("")
-  @ApiResponse({ type: ItemUsers, isArray: true })
-  getAll() {
-    return this.service.GetAllUsers();
-  }
-  @Get(":id")
-  @ApiResponse({ type: ItemUsers })
-  getById(@Param("id") id: string) {
+
+  @Get("me")
+  @ApiBearerAuth()
+  @ApiResponse({ type: ItemUsers, status: "2XX" })
+  @UseGuards(JwtAuthGuard)
+  getMe(@GetUserId() id: string) {
+    console.log(id);
+
     return this.service.GetUsersById(id);
   }
-  @Post("")
-  @ApiResponse({ type: ItemUsers })
-  @ApiBody({
-    schema: CreateUsersSchema,
-  })
-  create(@Body() item: CreateUsersDto) {
-    return this.service.CreateUsers(item);
-  }
+
   @Put(":id")
+  @ApiBearerAuth()
   @ApiResponse({ type: ItemUsers })
+  @UseGuards(JwtAuthGuard)
   @ApiBody({
     schema: UpdateUsersSchema,
   })
   update(@Param("id") id: string, @Body() item: UpdateUsersDto) {
     return this.service.UpdateUsers(id, item);
-  }
-  @Delete(":id")
-  delete(@Param("id") id: string) {
-    return this.service.DeleteUsers(id);
   }
 }

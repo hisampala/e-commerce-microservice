@@ -1,10 +1,13 @@
 import { Module } from "@nestjs/common";
-import { OrdersModule } from "../../../domain/modules/orders/orders.module";
-import { ProductsModule } from "../../../domain/modules/products/products.module";
-import { UsersModule } from "../../../domain/modules/users/users.module";
+import {
+  OrdersModule,
+  UsersModule,
+  ProductsModule,
+  LoginModule,
+} from "../../../domain/modules";
 
 @Module({
-  imports: [OrdersModule, UsersModule, ProductsModule],
-  exports: [OrdersModule, UsersModule, ProductsModule],
+  imports: [OrdersModule, UsersModule, ProductsModule, LoginModule],
+  exports: [OrdersModule, UsersModule, ProductsModule, LoginModule],
 })
 export class ProxyModule {}

@@ -21,7 +21,9 @@
       "@common/core": ["libs/common/src"],
       "@common/core/*": ["libs/common/src/*"],
       "@DataStore/Users": ["./datastore/users"],
-      "@DataStore/Users/*": ["./datastore/users/*"]
+      "@DataStore/Users/*": ["./datastore/users/*"],
+      "@DataStore/Products": ["./datastore/products"],
+      "@DataStore/Products/*": ["./datastore/products/*"]
     }
   }
 }

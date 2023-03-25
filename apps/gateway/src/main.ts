@@ -8,6 +8,7 @@ async function bootstrap() {
     .setTitle("E-Commerce  Wepservice")
     .setDescription("The E-Commerce API description")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
   patchNestjsSwagger();
   const document = SwaggerModule.createDocument(app, config);
