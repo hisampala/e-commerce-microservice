@@ -2,8 +2,11 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { ClientNats } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
 import { ProductsEvent, Provide } from "../../../../../../libs/common/src";
+
 import { CreateProductsDto } from "../../dto/products/create-products";
 import { ItemProducts } from "../../dto/products/item-products";
+import { CreateStockProductsDto } from "../../dto/products/stock/create-stock";
+import { ItemStock } from "../../dto/products/stock/item-stock";
 import { UpdateProductsDto } from "../../dto/products/update-products";
 export interface IProductsProxyService {
   CreateProducts(item: CreateProductsDto): Promise<ItemProducts>;
@@ -11,6 +14,8 @@ export interface IProductsProxyService {
   DeleteProducts(id: string): Promise<ItemProducts>;
   GetAllProducts(): Promise<ItemProducts[]>;
   GetProductsById(id: string): Promise<ItemProducts>;
+  CreatStockProducts(item: CreateStockProductsDto): Promise<ItemStock>;
+  GetProductsStock(id: string): Promise<ItemStock[]>;
 }
 @Injectable()
 export class ProductsProxyService implements IProductsProxyService {
@@ -18,6 +23,7 @@ export class ProductsProxyService implements IProductsProxyService {
     @Inject(Provide.products)
     private readonly productClient: ClientNats,
   ) {}
+
   async CreateProducts(item: CreateProductsDto): Promise<ItemProducts> {
     try {
       const result = await firstValueFrom<ItemProducts>(
@@ -83,6 +89,30 @@ export class ProductsProxyService implements IProductsProxyService {
       }
       return result;
     } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+  async CreatStockProducts(item: CreateStockProductsDto): Promise<ItemStock> {
+    try {
+      const result = await firstValueFrom<ItemStock>(
+        this.productClient.send(ProductsEvent.create_stock_products, item),
+      );
+      return result;
+    } catch (error) {
+      console.log(error);
+
+      throw new BadRequestException(error);
+    }
+  }
+  async GetProductsStock(id: string): Promise<ItemStock[]> {
+    try {
+      const result = await firstValueFrom<ItemStock[]>(
+        this.productClient.send(ProductsEvent.get_stock_products, id),
+      );
+      return result;
+    } catch (error) {
+      console.log(error);
+
       throw new BadRequestException(error);
     }
   }

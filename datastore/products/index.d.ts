@@ -41,7 +41,7 @@ export type StokProducts = {
   stock_code: string
   create_date: Date
   update_date: Date
-  user_crate: string
+  user_create: string
   user_update: string
 }
 
@@ -2086,7 +2086,7 @@ export namespace Prisma {
     stock_code: string | null
     create_date: Date | null
     update_date: Date | null
-    user_crate: string | null
+    user_create: string | null
     user_update: string | null
   }
 
@@ -2095,7 +2095,7 @@ export namespace Prisma {
     stock_code: string | null
     create_date: Date | null
     update_date: Date | null
-    user_crate: string | null
+    user_create: string | null
     user_update: string | null
   }
 
@@ -2104,7 +2104,7 @@ export namespace Prisma {
     stock_code: number
     create_date: number
     update_date: number
-    user_crate: number
+    user_create: number
     user_update: number
     _all: number
   }
@@ -2115,7 +2115,7 @@ export namespace Prisma {
     stock_code?: true
     create_date?: true
     update_date?: true
-    user_crate?: true
+    user_create?: true
     user_update?: true
   }
 
@@ -2124,7 +2124,7 @@ export namespace Prisma {
     stock_code?: true
     create_date?: true
     update_date?: true
-    user_crate?: true
+    user_create?: true
     user_update?: true
   }
 
@@ -2133,7 +2133,7 @@ export namespace Prisma {
     stock_code?: true
     create_date?: true
     update_date?: true
-    user_crate?: true
+    user_create?: true
     user_update?: true
     _all?: true
   }
@@ -2221,7 +2221,7 @@ export namespace Prisma {
     stock_code: string
     create_date: Date
     update_date: Date
-    user_crate: string
+    user_create: string
     user_update: string
     _count: StokProductsCountAggregateOutputType | null
     _min: StokProductsMinAggregateOutputType | null
@@ -2248,7 +2248,7 @@ export namespace Prisma {
     Detail?: boolean | StokProductsDetailArgs
     create_date?: boolean
     update_date?: boolean
-    user_crate?: boolean
+    user_create?: boolean
     user_update?: boolean
     _count?: boolean | StokProductsCountOutputTypeArgs
   }
@@ -4209,7 +4209,7 @@ export namespace Prisma {
     stock_code: 'stock_code',
     create_date: 'create_date',
     update_date: 'update_date',
-    user_crate: 'user_crate',
+    user_create: 'user_create',
     user_update: 'user_update'
   };
 
@@ -4324,7 +4324,7 @@ export namespace Prisma {
     Detail?: StokProductsDetailListRelationFilter
     create_date?: DateTimeFilter | Date | string
     update_date?: DateTimeFilter | Date | string
-    user_crate?: StringFilter | string
+    user_create?: StringFilter | string
     user_update?: StringFilter | string
   }
 
@@ -4334,13 +4334,14 @@ export namespace Prisma {
     Detail?: StokProductsDetailOrderByRelationAggregateInput
     create_date?: SortOrder
     update_date?: SortOrder
-    user_crate?: SortOrder
+    user_create?: SortOrder
     user_update?: SortOrder
   }
 
   export type StokProductsWhereUniqueInput = {
     id?: string
     stock_code?: string
+    id_stock_code_user_create?: StokProductsIdStock_codeUser_createCompoundUniqueInput
   }
 
   export type StokProductsOrderByWithAggregationInput = {
@@ -4348,7 +4349,7 @@ export namespace Prisma {
     stock_code?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    user_crate?: SortOrder
+    user_create?: SortOrder
     user_update?: SortOrder
     _count?: StokProductsCountOrderByAggregateInput
     _max?: StokProductsMaxOrderByAggregateInput
@@ -4363,7 +4364,7 @@ export namespace Prisma {
     stock_code?: StringWithAggregatesFilter | string
     create_date?: DateTimeWithAggregatesFilter | Date | string
     update_date?: DateTimeWithAggregatesFilter | Date | string
-    user_crate?: StringWithAggregatesFilter | string
+    user_create?: StringWithAggregatesFilter | string
     user_update?: StringWithAggregatesFilter | string
   }
 
@@ -4396,6 +4397,7 @@ export namespace Prisma {
 
   export type StokProductsDetailWhereUniqueInput = {
     id?: string
+    id_stokProductsId_productsId?: StokProductsDetailIdStokProductsIdProductsIdCompoundUniqueInput
   }
 
   export type StokProductsDetailOrderByWithAggregationInput = {
@@ -4548,7 +4550,7 @@ export namespace Prisma {
     Detail?: StokProductsDetailCreateNestedManyWithoutStokProductsInput
     create_date?: Date | string
     update_date?: Date | string
-    user_crate: string
+    user_create: string
     user_update: string
   }
 
@@ -4558,7 +4560,7 @@ export namespace Prisma {
     Detail?: StokProductsDetailUncheckedCreateNestedManyWithoutStokProductsInput
     create_date?: Date | string
     update_date?: Date | string
-    user_crate: string
+    user_create: string
     user_update: string
   }
 
@@ -4568,7 +4570,7 @@ export namespace Prisma {
     Detail?: StokProductsDetailUpdateManyWithoutStokProductsNestedInput
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    user_crate?: StringFieldUpdateOperationsInput | string
+    user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
 
@@ -4578,7 +4580,7 @@ export namespace Prisma {
     Detail?: StokProductsDetailUncheckedUpdateManyWithoutStokProductsNestedInput
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    user_crate?: StringFieldUpdateOperationsInput | string
+    user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
 
@@ -4587,7 +4589,7 @@ export namespace Prisma {
     stock_code: string
     create_date?: Date | string
     update_date?: Date | string
-    user_crate: string
+    user_create: string
     user_update: string
   }
 
@@ -4596,7 +4598,7 @@ export namespace Prisma {
     stock_code?: StringFieldUpdateOperationsInput | string
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    user_crate?: StringFieldUpdateOperationsInput | string
+    user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
 
@@ -4605,7 +4607,7 @@ export namespace Prisma {
     stock_code?: StringFieldUpdateOperationsInput | string
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    user_crate?: StringFieldUpdateOperationsInput | string
+    user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
 
@@ -4870,12 +4872,18 @@ export namespace Prisma {
     _max?: NestedBoolFilter
   }
 
+  export type StokProductsIdStock_codeUser_createCompoundUniqueInput = {
+    id: string
+    stock_code: string
+    user_create: string
+  }
+
   export type StokProductsCountOrderByAggregateInput = {
     id?: SortOrder
     stock_code?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    user_crate?: SortOrder
+    user_create?: SortOrder
     user_update?: SortOrder
   }
 
@@ -4884,7 +4892,7 @@ export namespace Prisma {
     stock_code?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    user_crate?: SortOrder
+    user_create?: SortOrder
     user_update?: SortOrder
   }
 
@@ -4893,7 +4901,7 @@ export namespace Prisma {
     stock_code?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    user_crate?: SortOrder
+    user_create?: SortOrder
     user_update?: SortOrder
   }
 
@@ -4905,6 +4913,12 @@ export namespace Prisma {
   export type ProductsRelationFilter = {
     is?: ProductsWhereInput
     isNot?: ProductsWhereInput
+  }
+
+  export type StokProductsDetailIdStokProductsIdProductsIdCompoundUniqueInput = {
+    id: string
+    stokProductsId: string
+    productsId: string
   }
 
   export type StokProductsDetailCountOrderByAggregateInput = {
@@ -5336,7 +5350,7 @@ export namespace Prisma {
     stock_code: string
     create_date?: Date | string
     update_date?: Date | string
-    user_crate: string
+    user_create: string
     user_update: string
   }
 
@@ -5345,7 +5359,7 @@ export namespace Prisma {
     stock_code: string
     create_date?: Date | string
     update_date?: Date | string
-    user_crate: string
+    user_create: string
     user_update: string
   }
 
@@ -5401,7 +5415,7 @@ export namespace Prisma {
     stock_code?: StringFieldUpdateOperationsInput | string
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    user_crate?: StringFieldUpdateOperationsInput | string
+    user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
 
@@ -5410,7 +5424,7 @@ export namespace Prisma {
     stock_code?: StringFieldUpdateOperationsInput | string
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    user_crate?: StringFieldUpdateOperationsInput | string
+    user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
 

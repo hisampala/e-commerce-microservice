@@ -130,7 +130,7 @@ exports.Prisma.StokProductsScalarFieldEnum = makeEnum({
   stock_code: 'stock_code',
   create_date: 'create_date',
   update_date: 'update_date',
-  user_crate: 'user_crate',
+  user_create: 'user_create',
   user_update: 'user_update'
 });
 

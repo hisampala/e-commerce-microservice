@@ -9,6 +9,7 @@ import { ProductsService } from "./products.service";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { ProductsEvent } from "@common/core";
+import { CreateStockProductDto } from "./dto/create-stock-products.dto";
 
 @Controller()
 export class ProductsController {
@@ -48,5 +49,18 @@ export class ProductsController {
   remove(@Payload() id: string, @Ctx() context: NatsContext) {
     new Logger(ProductsController.name).log(JSON.stringify(context.getArgs()));
     return this.productsService.remove(id);
+  }
+  @MessagePattern(ProductsEvent.get_stock_products)
+  StockProducts(@Payload() id: string, @Ctx() context: NatsContext) {
+    new Logger(ProductsController.name).log(JSON.stringify(context.getArgs()));
+    return this.productsService.stockProducts(id);
+  }
+  @MessagePattern(ProductsEvent.create_stock_products)
+  CreatStock(
+    @Payload() item: CreateStockProductDto,
+    @Ctx() context: NatsContext,
+  ) {
+    new Logger(ProductsController.name).log(JSON.stringify(context.getArgs()));
+    return this.productsService.createStock(item);
   }
 }

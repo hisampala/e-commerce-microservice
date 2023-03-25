@@ -24,6 +24,11 @@ import { CreateProductsSchema } from "../../../domain/dto/products/create-produc
 import { ItemProducts } from "../../../domain/dto/products/item-products";
 import { UpdateProductsSchema } from "../../../domain/dto/products/update-products";
 import { IProductsProxyService } from "../../../domain/service/products-proxy/products-proxy.service";
+import {
+  CreateStockProductsDto,
+  CreateStockProductsSchema,
+} from "../../../domain/dto/products/stock/create-stock";
+import { ItemStock } from "../../../domain/dto/products/stock/item-stock";
 
 @Controller(ControllerPath.Products)
 @ApiTags("Products")
@@ -76,6 +81,24 @@ export class ProductsController {
   async delete(@Param("id") id: string) {
     return this.service.DeleteProducts(id);
   }
-  @Post(":id/stock")
-  async stock() {}
+  @Post("stock")
+  @ApiBearerAuth()
+  @ApiBody({ schema: CreateStockProductsSchema })
+  @ApiResponse({ type: ItemStock })
+  @ApiTags("Stock")
+  @UseGuards(JwtAuthGuard)
+  async stock(
+    @Body() item: CreateStockProductsDto,
+    @GetUserId() userId: string,
+  ) {
+    item["user_create"] = userId;
+    return this.service.CreatStockProducts(item);
+  }
+  @Get(":id/stock")
+  @ApiBearerAuth()
+  @ApiResponse({ type: ItemStock, isArray: true })
+  @UseGuards(JwtAuthGuard)
+  async stockProducts(@Param("id") id: string) {
+    return this.service.GetProductsStock(id);
+  }
 }

@@ -26,6 +26,8 @@ model Products {
     user_create  String
     user_update  String
     StockDetail  StokProductsDetail[]
+
+    @@index([id, name, sku, bar_code, user_create])
 }
 
 model StokProducts {
@@ -34,8 +36,10 @@ model StokProducts {
     Detail      StokProductsDetail[]
     create_date DateTime             @default(now())
     update_date DateTime             @updatedAt
-    user_crate  String
+    user_create String
     user_update String
+
+    @@unique([id, stock_code, user_create])
 }
 
 model StokProductsDetail {
@@ -48,4 +52,6 @@ model StokProductsDetail {
     cost_new        Int
     amont_old_stock Int
     cost_old        Int
+
+    @@unique([id, stokProductsId, productsId])
 }
