@@ -128,7 +128,6 @@ exports.Prisma.StokProductsDetailScalarFieldEnum = makeEnum({
 exports.Prisma.StokProductsScalarFieldEnum = makeEnum({
   id: 'id',
   stock_code: 'stock_code',
-  status: 'status',
   create_date: 'create_date',
   update_date: 'update_date',
   user_crate: 'user_crate',
@@ -141,12 +140,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
-exports.StatusStockProducts = makeEnum({
-  Draft: 'Draft',
-  Complate: 'Complate',
-  Restore: 'Restore',
-  Cancle: 'Cancle'
-});
+
 
 exports.Prisma.ModelName = makeEnum({
   Products: 'Products',

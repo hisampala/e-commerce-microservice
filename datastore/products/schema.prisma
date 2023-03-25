@@ -31,7 +31,6 @@ model Products {
 model StokProducts {
     id          String               @id @default(uuid()) @map("_id")
     stock_code  String               @unique
-    status      StatusStockProducts  @default(Draft)
     Detail      StokProductsDetail[]
     create_date DateTime             @default(now())
     update_date DateTime             @updatedAt
@@ -49,11 +48,4 @@ model StokProductsDetail {
     cost_new        Int
     amont_old_stock Int
     cost_old        Int
-}
-
-enum StatusStockProducts {
-    Draft
-    Complate
-    Restore
-    Cancle
 }

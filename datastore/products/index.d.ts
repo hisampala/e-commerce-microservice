@@ -39,7 +39,6 @@ export type Products = {
 export type StokProducts = {
   id: string
   stock_code: string
-  status: StatusStockProducts
   create_date: Date
   update_date: Date
   user_crate: string
@@ -59,23 +58,6 @@ export type StokProductsDetail = {
   amont_old_stock: number
   cost_old: number
 }
-
-
-/**
- * Enums
- */
-
-// Based on
-// https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
-
-export const StatusStockProducts: {
-  Draft: 'Draft',
-  Complate: 'Complate',
-  Restore: 'Restore',
-  Cancle: 'Cancle'
-};
-
-export type StatusStockProducts = (typeof StatusStockProducts)[keyof typeof StatusStockProducts]
 
 
 /**
@@ -2102,7 +2084,6 @@ export namespace Prisma {
   export type StokProductsMinAggregateOutputType = {
     id: string | null
     stock_code: string | null
-    status: StatusStockProducts | null
     create_date: Date | null
     update_date: Date | null
     user_crate: string | null
@@ -2112,7 +2093,6 @@ export namespace Prisma {
   export type StokProductsMaxAggregateOutputType = {
     id: string | null
     stock_code: string | null
-    status: StatusStockProducts | null
     create_date: Date | null
     update_date: Date | null
     user_crate: string | null
@@ -2122,7 +2102,6 @@ export namespace Prisma {
   export type StokProductsCountAggregateOutputType = {
     id: number
     stock_code: number
-    status: number
     create_date: number
     update_date: number
     user_crate: number
@@ -2134,7 +2113,6 @@ export namespace Prisma {
   export type StokProductsMinAggregateInputType = {
     id?: true
     stock_code?: true
-    status?: true
     create_date?: true
     update_date?: true
     user_crate?: true
@@ -2144,7 +2122,6 @@ export namespace Prisma {
   export type StokProductsMaxAggregateInputType = {
     id?: true
     stock_code?: true
-    status?: true
     create_date?: true
     update_date?: true
     user_crate?: true
@@ -2154,7 +2131,6 @@ export namespace Prisma {
   export type StokProductsCountAggregateInputType = {
     id?: true
     stock_code?: true
-    status?: true
     create_date?: true
     update_date?: true
     user_crate?: true
@@ -2243,7 +2219,6 @@ export namespace Prisma {
   export type StokProductsGroupByOutputType = {
     id: string
     stock_code: string
-    status: StatusStockProducts
     create_date: Date
     update_date: Date
     user_crate: string
@@ -2270,7 +2245,6 @@ export namespace Prisma {
   export type StokProductsSelect = {
     id?: boolean
     stock_code?: boolean
-    status?: boolean
     Detail?: boolean | StokProductsDetailArgs
     create_date?: boolean
     update_date?: boolean
@@ -4233,7 +4207,6 @@ export namespace Prisma {
   export const StokProductsScalarFieldEnum: {
     id: 'id',
     stock_code: 'stock_code',
-    status: 'status',
     create_date: 'create_date',
     update_date: 'update_date',
     user_crate: 'user_crate',
@@ -4348,7 +4321,6 @@ export namespace Prisma {
     NOT?: Enumerable<StokProductsWhereInput>
     id?: StringFilter | string
     stock_code?: StringFilter | string
-    status?: EnumStatusStockProductsFilter | StatusStockProducts
     Detail?: StokProductsDetailListRelationFilter
     create_date?: DateTimeFilter | Date | string
     update_date?: DateTimeFilter | Date | string
@@ -4359,7 +4331,6 @@ export namespace Prisma {
   export type StokProductsOrderByWithRelationInput = {
     id?: SortOrder
     stock_code?: SortOrder
-    status?: SortOrder
     Detail?: StokProductsDetailOrderByRelationAggregateInput
     create_date?: SortOrder
     update_date?: SortOrder
@@ -4375,7 +4346,6 @@ export namespace Prisma {
   export type StokProductsOrderByWithAggregationInput = {
     id?: SortOrder
     stock_code?: SortOrder
-    status?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
     user_crate?: SortOrder
@@ -4391,7 +4361,6 @@ export namespace Prisma {
     NOT?: Enumerable<StokProductsScalarWhereWithAggregatesInput>
     id?: StringWithAggregatesFilter | string
     stock_code?: StringWithAggregatesFilter | string
-    status?: EnumStatusStockProductsWithAggregatesFilter | StatusStockProducts
     create_date?: DateTimeWithAggregatesFilter | Date | string
     update_date?: DateTimeWithAggregatesFilter | Date | string
     user_crate?: StringWithAggregatesFilter | string
@@ -4576,7 +4545,6 @@ export namespace Prisma {
   export type StokProductsCreateInput = {
     id?: string
     stock_code: string
-    status?: StatusStockProducts
     Detail?: StokProductsDetailCreateNestedManyWithoutStokProductsInput
     create_date?: Date | string
     update_date?: Date | string
@@ -4587,7 +4555,6 @@ export namespace Prisma {
   export type StokProductsUncheckedCreateInput = {
     id?: string
     stock_code: string
-    status?: StatusStockProducts
     Detail?: StokProductsDetailUncheckedCreateNestedManyWithoutStokProductsInput
     create_date?: Date | string
     update_date?: Date | string
@@ -4598,7 +4565,6 @@ export namespace Prisma {
   export type StokProductsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    status?: EnumStatusStockProductsFieldUpdateOperationsInput | StatusStockProducts
     Detail?: StokProductsDetailUpdateManyWithoutStokProductsNestedInput
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4609,7 +4575,6 @@ export namespace Prisma {
   export type StokProductsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    status?: EnumStatusStockProductsFieldUpdateOperationsInput | StatusStockProducts
     Detail?: StokProductsDetailUncheckedUpdateManyWithoutStokProductsNestedInput
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4620,7 +4585,6 @@ export namespace Prisma {
   export type StokProductsCreateManyInput = {
     id?: string
     stock_code: string
-    status?: StatusStockProducts
     create_date?: Date | string
     update_date?: Date | string
     user_crate: string
@@ -4630,7 +4594,6 @@ export namespace Prisma {
   export type StokProductsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    status?: EnumStatusStockProductsFieldUpdateOperationsInput | StatusStockProducts
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
     user_crate?: StringFieldUpdateOperationsInput | string
@@ -4640,7 +4603,6 @@ export namespace Prisma {
   export type StokProductsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    status?: EnumStatusStockProductsFieldUpdateOperationsInput | StatusStockProducts
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
     user_crate?: StringFieldUpdateOperationsInput | string
@@ -4908,17 +4870,9 @@ export namespace Prisma {
     _max?: NestedBoolFilter
   }
 
-  export type EnumStatusStockProductsFilter = {
-    equals?: StatusStockProducts
-    in?: Enumerable<StatusStockProducts>
-    notIn?: Enumerable<StatusStockProducts>
-    not?: NestedEnumStatusStockProductsFilter | StatusStockProducts
-  }
-
   export type StokProductsCountOrderByAggregateInput = {
     id?: SortOrder
     stock_code?: SortOrder
-    status?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
     user_crate?: SortOrder
@@ -4928,7 +4882,6 @@ export namespace Prisma {
   export type StokProductsMaxOrderByAggregateInput = {
     id?: SortOrder
     stock_code?: SortOrder
-    status?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
     user_crate?: SortOrder
@@ -4938,21 +4891,10 @@ export namespace Prisma {
   export type StokProductsMinOrderByAggregateInput = {
     id?: SortOrder
     stock_code?: SortOrder
-    status?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
     user_crate?: SortOrder
     user_update?: SortOrder
-  }
-
-  export type EnumStatusStockProductsWithAggregatesFilter = {
-    equals?: StatusStockProducts
-    in?: Enumerable<StatusStockProducts>
-    notIn?: Enumerable<StatusStockProducts>
-    not?: NestedEnumStatusStockProductsWithAggregatesFilter | StatusStockProducts
-    _count?: NestedIntFilter
-    _min?: NestedEnumStatusStockProductsFilter
-    _max?: NestedEnumStatusStockProductsFilter
   }
 
   export type StokProductsRelationFilter = {
@@ -5087,10 +5029,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<StokProductsDetailCreateOrConnectWithoutStokProductsInput>
     createMany?: StokProductsDetailCreateManyStokProductsInputEnvelope
     connect?: Enumerable<StokProductsDetailWhereUniqueInput>
-  }
-
-  export type EnumStatusStockProductsFieldUpdateOperationsInput = {
-    set?: StatusStockProducts
   }
 
   export type StokProductsDetailUpdateManyWithoutStokProductsNestedInput = {
@@ -5292,23 +5230,6 @@ export namespace Prisma {
     _max?: NestedBoolFilter
   }
 
-  export type NestedEnumStatusStockProductsFilter = {
-    equals?: StatusStockProducts
-    in?: Enumerable<StatusStockProducts>
-    notIn?: Enumerable<StatusStockProducts>
-    not?: NestedEnumStatusStockProductsFilter | StatusStockProducts
-  }
-
-  export type NestedEnumStatusStockProductsWithAggregatesFilter = {
-    equals?: StatusStockProducts
-    in?: Enumerable<StatusStockProducts>
-    notIn?: Enumerable<StatusStockProducts>
-    not?: NestedEnumStatusStockProductsWithAggregatesFilter | StatusStockProducts
-    _count?: NestedIntFilter
-    _min?: NestedEnumStatusStockProductsFilter
-    _max?: NestedEnumStatusStockProductsFilter
-  }
-
   export type StokProductsDetailCreateWithoutProductsInput = {
     id?: string
     StokProducts: StokProductsCreateNestedOneWithoutDetailInput
@@ -5413,7 +5334,6 @@ export namespace Prisma {
   export type StokProductsCreateWithoutDetailInput = {
     id?: string
     stock_code: string
-    status?: StatusStockProducts
     create_date?: Date | string
     update_date?: Date | string
     user_crate: string
@@ -5423,7 +5343,6 @@ export namespace Prisma {
   export type StokProductsUncheckedCreateWithoutDetailInput = {
     id?: string
     stock_code: string
-    status?: StatusStockProducts
     create_date?: Date | string
     update_date?: Date | string
     user_crate: string
@@ -5480,7 +5399,6 @@ export namespace Prisma {
   export type StokProductsUpdateWithoutDetailInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    status?: EnumStatusStockProductsFieldUpdateOperationsInput | StatusStockProducts
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
     user_crate?: StringFieldUpdateOperationsInput | string
@@ -5490,7 +5408,6 @@ export namespace Prisma {
   export type StokProductsUncheckedUpdateWithoutDetailInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    status?: EnumStatusStockProductsFieldUpdateOperationsInput | StatusStockProducts
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
     user_crate?: StringFieldUpdateOperationsInput | string
