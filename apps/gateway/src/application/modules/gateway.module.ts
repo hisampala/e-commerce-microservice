@@ -5,5 +5,6 @@ import { CommonModule } from "@common/core";
 
 @Module({
   imports: [CommonModule, ProxyModule, ControllersModule],
+  exports: [ProxyModule],
 })
 export class GatewayModule {}

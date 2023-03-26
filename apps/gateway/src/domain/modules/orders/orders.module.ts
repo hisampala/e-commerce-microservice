@@ -1,4 +1,15 @@
 import { Module } from "@nestjs/common";
-import { CommonModule } from "@common/core";
-@Module({ imports: [CommonModule] })
+import { Provide, ServiceProxy } from "@common/core";
+
+import { OrderProxyService } from "../../service/order-proxy/order-proxy.service";
+
+@Module({
+  providers: [
+    {
+      provide: ServiceProxy.Orders,
+      useClass: OrderProxyService,
+    },
+  ],
+  exports: [ServiceProxy.Orders],
+})
 export class OrdersModule {}

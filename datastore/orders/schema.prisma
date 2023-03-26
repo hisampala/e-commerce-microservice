@@ -14,7 +14,7 @@ datasource db {
 model Orders {
     id          String        @id @default(uuid())
     paymant     PaymentStatus
-    status      StatusOrders
+    status      StatusOrders  @default(Draf)
     remark      String
     customerId  String
     create_date DateTime      @default(now())

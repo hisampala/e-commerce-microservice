@@ -1,33 +1,15 @@
-import { Prisma, PrismaClient } from "@DataStore/Products";
+import { PrismaClient } from "@DataStore/Products";
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { CreateStockProductDto } from "./dto/create-stock-products.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
-interface softdelete {
-  deleted_date: Date;
-  is_deleted: boolean;
-}
+
 @Injectable()
 export class ProductsService implements OnModuleInit {
   constructor(private context: PrismaClient) {}
 
   async onModuleInit() {
-    await this.context.$use(async (params: Prisma.MiddlewareParams, next) => {
-      if (params) {
-        if (params.action === "delete") {
-          params.action = "update";
-          params.args["data"] = {
-            is_deleted: true,
-            deleted_date: new Date(),
-          } as softdelete;
-        }
-
-        return next(params);
-      } else {
-        return next(params);
-      }
-    });
     await this.context.$connect();
   }
   async create(createProductDto: CreateProductDto) {

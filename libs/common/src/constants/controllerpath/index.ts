@@ -3,4 +3,5 @@ export const ControllerPath = {
   Login: "login",
   Register: "register",
   Products: "products",
+  Orders: "orders",
 };

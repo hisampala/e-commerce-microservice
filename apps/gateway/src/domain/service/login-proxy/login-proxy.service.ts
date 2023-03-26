@@ -1,6 +1,7 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { OnModuleInit } from "@nestjs/common/interfaces";
 import { ClientProxy } from "@nestjs/microservices";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, Subject } from "rxjs";
 import { LoginEvent, Provide } from "../../../../../../libs/common/src";
 import { LoginDto } from "../../dto/login/login.dto";
 import { TokenJwt } from "../../dto/login/token-jwt.dto";
@@ -12,6 +13,7 @@ export class LoginProxyService implements ILoginProxyService {
   constructor(
     @Inject(Provide.login) private readonly loginClient: ClientProxy,
   ) {}
+
   async OnLogin(item: LoginDto): Promise<TokenJwt> {
     try {
       const result = await firstValueFrom<TokenJwt>(

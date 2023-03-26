@@ -13,11 +13,11 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 4.8.0
+ * Prisma Client JS version: 4.11.0
  * Query Engine version: d6e67a83f971b175a593ccc12e15c4a757f93ffe
  */
 Prisma.prismaVersion = {
-  client: "4.8.0",
+  client: "4.11.0",
   engine: "d6e67a83f971b175a593ccc12e15c4a757f93ffe"
 }
 
@@ -99,8 +99,6 @@ exports.Prisma.ProductsScalarFieldEnum = makeEnum({
   price: 'price',
   create_date: 'create_date',
   update_date: 'update_date',
-  deleted_date: 'deleted_date',
-  is_deleted: 'is_deleted',
   user_create: 'user_create',
   user_update: 'user_update'
 });

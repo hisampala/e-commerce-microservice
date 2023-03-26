@@ -3143,7 +3143,7 @@ export namespace Prisma {
   export type OrdersCreateInput = {
     id?: string
     paymant: PaymentStatus
-    status: StatusOrders
+    status?: StatusOrders
     remark: string
     customerId: string
     create_date?: Date | string
@@ -3154,7 +3154,7 @@ export namespace Prisma {
   export type OrdersUncheckedCreateInput = {
     id?: string
     paymant: PaymentStatus
-    status: StatusOrders
+    status?: StatusOrders
     remark: string
     customerId: string
     create_date?: Date | string
@@ -3187,7 +3187,7 @@ export namespace Prisma {
   export type OrdersCreateManyInput = {
     id?: string
     paymant: PaymentStatus
-    status: StatusOrders
+    status?: StatusOrders
     remark: string
     customerId: string
     create_date?: Date | string
@@ -3817,7 +3817,7 @@ export namespace Prisma {
   export type OrdersCreateWithoutOrderDetailInput = {
     id?: string
     paymant: PaymentStatus
-    status: StatusOrders
+    status?: StatusOrders
     remark: string
     customerId: string
     create_date?: Date | string
@@ -3827,7 +3827,7 @@ export namespace Prisma {
   export type OrdersUncheckedCreateWithoutOrderDetailInput = {
     id?: string
     paymant: PaymentStatus
-    status: StatusOrders
+    status?: StatusOrders
     remark: string
     customerId: string
     create_date?: Date | string

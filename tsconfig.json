@@ -23,7 +23,9 @@
       "@DataStore/Users": ["./datastore/users"],
       "@DataStore/Users/*": ["./datastore/users/*"],
       "@DataStore/Products": ["./datastore/products"],
-      "@DataStore/Products/*": ["./datastore/products/*"]
+      "@DataStore/Products/*": ["./datastore/products/*"],
+      "@DataStore/Orders": ["./datastore/orders"],
+      "@DataStore/Orders/*": ["./datastore/orders/*"]
     }
   }
 }

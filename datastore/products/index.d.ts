@@ -3,12 +3,10 @@
  * Client
 **/
 
-import * as runtime from './runtime/index';
-declare const prisma: unique symbol
-export type PrismaPromise<A> = Promise<A> & {[prisma]: true}
+import * as runtime from './runtime/library';
 type UnwrapPromise<P extends any> = P extends Promise<infer R> ? R : P
 type UnwrapTuple<Tuple extends readonly unknown[]> = {
-  [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
+  [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends Prisma.PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
 };
 
 
@@ -26,8 +24,6 @@ export type Products = {
   price: number
   create_date: Date
   update_date: Date
-  deleted_date: Date | null
-  is_deleted: boolean
   user_create: string
   user_update: string
 }
@@ -123,7 +119,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<number>;
+  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
   /**
    * Executes a raw query and returns the number of affected rows.
@@ -135,7 +131,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<number>;
+  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
   /**
    * Performs a prepared raw query and returns the `SELECT` data.
@@ -146,7 +142,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<T>;
+  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
   /**
    * Performs a raw query and returns the `SELECT` data.
@@ -158,7 +154,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<T>;
+  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 
   /**
    * Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.
@@ -173,9 +169,9 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<UnwrapTuple<P>>;
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<UnwrapTuple<P>>
 
-  $transaction<R>(fn: (prisma: Prisma.TransactionClient) => Promise<R>, options?: {maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel}): Promise<R>;
+  $transaction<R>(fn: (prisma: Omit<this, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<R>
 
       /**
    * `prisma.products`: Exposes CRUD operations for the **Products** model.
@@ -210,6 +206,8 @@ export class PrismaClient<
 
 export namespace Prisma {
   export import DMMF = runtime.DMMF
+
+  export type PrismaPromise<T> = runtime.Types.Public.PrismaPromise<T>
 
   /**
    * Prisma Errors
@@ -247,7 +245,7 @@ export namespace Prisma {
 
 
   /**
-   * Prisma Client JS version: 4.8.0
+   * Prisma Client JS version: 4.11.0
    * Query Engine version: d6e67a83f971b175a593ccc12e15c4a757f93ffe
    */
   export type PrismaVersion = {
@@ -612,19 +610,11 @@ export namespace Prisma {
 
   export type Keys<U extends Union> = U extends unknown ? keyof U : never
 
-  type Exact<A, W = unknown> = 
-  W extends unknown ? A extends Narrowable ? Cast<A, W> : Cast<
-  {[K in keyof A]: K extends keyof W ? Exact<A[K], W[K]> : never},
-  {[K in keyof W]: K extends keyof A ? Exact<A[K], W[K]> : W[K]}>
-  : never;
-
-  type Narrowable = string | number | boolean | bigint;
-
   type Cast<A, B> = A extends B ? A : B;
 
   export const type: unique symbol;
 
-  export function validator<V>(): <S>(select: Exact<S, V>) => S;
+  export function validator<V>(): <S>(select: runtime.Types.Utils.LegacyExact<S, V>) => S;
 
   /**
    * Used by group by
@@ -679,15 +669,6 @@ export namespace Prisma {
 
   type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>
 
-  class PrismaClientFetcher {
-    private readonly prisma;
-    private readonly debug;
-    private readonly hooks?;
-    constructor(prisma: PrismaClient<any, any>, debug?: boolean, hooks?: Hooks | undefined);
-    request<T>(document: any, dataPath?: string[], rootField?: string, typeName?: string, isList?: boolean, callsite?: string): Promise<T>;
-    sanitizeMessage(message: string): string;
-    protected unpack(document: any, data: any, path: string[], rootField?: string, isList?: boolean): any;
-  }
 
   export const ModelName: {
     Products: 'Products',
@@ -769,10 +750,6 @@ export namespace Prisma {
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
     log?: Array<LogLevel | LogDefinition>
-  }
-
-  export type Hooks = {
-    beforeRequest?: (options: { query: string, path: string[], rootField?: string, typeName?: string, document: any }) => any
   }
 
   /* Types for Logging */
@@ -894,8 +871,7 @@ export namespace Prisma {
   export type ProductsCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the ProductsCountOutputType
-     * 
-    **/
+     */
     select?: ProductsCountOutputTypeSelect | null
   }
 
@@ -938,8 +914,7 @@ export namespace Prisma {
   export type StokProductsCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the StokProductsCountOutputType
-     * 
-    **/
+     */
     select?: StokProductsCountOutputTypeSelect | null
   }
 
@@ -984,8 +959,6 @@ export namespace Prisma {
     price: number | null
     create_date: Date | null
     update_date: Date | null
-    deleted_date: Date | null
-    is_deleted: boolean | null
     user_create: string | null
     user_update: string | null
   }
@@ -1000,8 +973,6 @@ export namespace Prisma {
     price: number | null
     create_date: Date | null
     update_date: Date | null
-    deleted_date: Date | null
-    is_deleted: boolean | null
     user_create: string | null
     user_update: string | null
   }
@@ -1016,8 +987,6 @@ export namespace Prisma {
     price: number
     create_date: number
     update_date: number
-    deleted_date: number
-    is_deleted: number
     user_create: number
     user_update: number
     _all: number
@@ -1046,8 +1015,6 @@ export namespace Prisma {
     price?: true
     create_date?: true
     update_date?: true
-    deleted_date?: true
-    is_deleted?: true
     user_create?: true
     user_update?: true
   }
@@ -1062,8 +1029,6 @@ export namespace Prisma {
     price?: true
     create_date?: true
     update_date?: true
-    deleted_date?: true
-    is_deleted?: true
     user_create?: true
     user_update?: true
   }
@@ -1078,8 +1043,6 @@ export namespace Prisma {
     price?: true
     create_date?: true
     update_date?: true
-    deleted_date?: true
-    is_deleted?: true
     user_create?: true
     user_update?: true
     _all?: true
@@ -1088,36 +1051,31 @@ export namespace Prisma {
   export type ProductsAggregateArgs = {
     /**
      * Filter which Products to aggregate.
-     * 
-    **/
+     */
     where?: ProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Products to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<ProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     * 
-    **/
+     */
     cursor?: ProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Products from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Products.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -1165,7 +1123,7 @@ export namespace Prisma {
   export type ProductsGroupByArgs = {
     where?: ProductsWhereInput
     orderBy?: Enumerable<ProductsOrderByWithAggregationInput>
-    by: Array<ProductsScalarFieldEnum>
+    by: ProductsScalarFieldEnum[]
     having?: ProductsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -1187,8 +1145,6 @@ export namespace Prisma {
     price: number
     create_date: Date
     update_date: Date
-    deleted_date: Date | null
-    is_deleted: boolean
     user_create: string
     user_update: string
     _count: ProductsCountAggregateOutputType | null
@@ -1198,7 +1154,7 @@ export namespace Prisma {
     _max: ProductsMaxAggregateOutputType | null
   }
 
-  type GetProductsGroupByPayload<T extends ProductsGroupByArgs> = PrismaPromise<
+  type GetProductsGroupByPayload<T extends ProductsGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickArray<ProductsGroupByOutputType, T['by']> &
         {
@@ -1222,19 +1178,17 @@ export namespace Prisma {
     price?: boolean
     create_date?: boolean
     update_date?: boolean
-    deleted_date?: boolean
-    is_deleted?: boolean
     user_create?: boolean
     user_update?: boolean
-    StockDetail?: boolean | ProductsStockDetailArgs
+    StockDetail?: boolean | Products$StockDetailArgs
     _count?: boolean | ProductsCountOutputTypeArgs
   }
 
 
   export type ProductsInclude = {
-    StockDetail?: boolean | ProductsStockDetailArgs
+    StockDetail?: boolean | Products$StockDetailArgs
     _count?: boolean | ProductsCountOutputTypeArgs
-  } 
+  }
 
   export type ProductsGetPayload<S extends boolean | null | undefined | ProductsArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
@@ -1255,13 +1209,13 @@ export namespace Prisma {
       : Products
 
 
-  type ProductsCountArgs = Merge<
+  type ProductsCountArgs = 
     Omit<ProductsFindManyArgs, 'select' | 'include'> & {
       select?: ProductsCountAggregateInputType | true
     }
-  >
 
   export interface ProductsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
     /**
      * Find zero or one Products that matches the filter.
      * @param {ProductsFindUniqueArgs} args - Arguments to find a Products
@@ -1346,7 +1300,7 @@ export namespace Prisma {
     **/
     findMany<T extends ProductsFindManyArgs>(
       args?: SelectSubset<T, ProductsFindManyArgs>
-    ): PrismaPromise<Array<ProductsGetPayload<T>>>
+    ): Prisma.PrismaPromise<Array<ProductsGetPayload<T>>>
 
     /**
      * Create a Products.
@@ -1378,7 +1332,7 @@ export namespace Prisma {
     **/
     createMany<T extends ProductsCreateManyArgs>(
       args?: SelectSubset<T, ProductsCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Delete a Products.
@@ -1429,7 +1383,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends ProductsDeleteManyArgs>(
       args?: SelectSubset<T, ProductsDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Products.
@@ -1450,7 +1404,7 @@ export namespace Prisma {
     **/
     updateMany<T extends ProductsUpdateManyArgs>(
       args: SelectSubset<T, ProductsUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Products.
@@ -1488,7 +1442,7 @@ export namespace Prisma {
     **/
     count<T extends ProductsCountArgs>(
       args?: Subset<T, ProductsCountArgs>,
-    ): PrismaPromise<
+    ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -1520,7 +1474,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends ProductsAggregateArgs>(args: Subset<T, ProductsAggregateArgs>): PrismaPromise<GetProductsAggregateType<T>>
+    aggregate<T extends ProductsAggregateArgs>(args: Subset<T, ProductsAggregateArgs>): Prisma.PrismaPromise<GetProductsAggregateType<T>>
 
     /**
      * Group by Products.
@@ -1597,7 +1551,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ProductsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProductsGroupByPayload<T> : PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ProductsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProductsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
@@ -1607,10 +1561,8 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__ProductsClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
+  export class Prisma__ProductsClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
-    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -1621,10 +1573,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    StockDetail<T extends ProductsStockDetailArgs= {}>(args?: Subset<T, ProductsStockDetailArgs>): PrismaPromise<Array<StokProductsDetailGetPayload<T>>| Null>;
+    StockDetail<T extends Products$StockDetailArgs= {}>(args?: Subset<T, Products$StockDetailArgs>): Prisma.PrismaPromise<Array<StokProductsDetailGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -1659,18 +1611,15 @@ export namespace Prisma {
   export type ProductsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * Filter, which Products to fetch.
-     * 
-    **/
+     */
     where: ProductsWhereUniqueInput
   }
 
@@ -1692,18 +1641,15 @@ export namespace Prisma {
   export type ProductsFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * Filter, which Products to fetch.
-     * 
-    **/
+     */
     where: ProductsWhereUniqueInput
   }
 
@@ -1714,53 +1660,45 @@ export namespace Prisma {
   export type ProductsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * Filter, which Products to fetch.
-     * 
-    **/
+     */
     where?: ProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Products to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<ProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Products.
-     * 
-    **/
+     */
     cursor?: ProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Products from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Products.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Products.
-     * 
-    **/
+     */
     distinct?: Enumerable<ProductsScalarFieldEnum>
   }
 
@@ -1782,53 +1720,45 @@ export namespace Prisma {
   export type ProductsFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * Filter, which Products to fetch.
-     * 
-    **/
+     */
     where?: ProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Products to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<ProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Products.
-     * 
-    **/
+     */
     cursor?: ProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Products from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Products.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Products.
-     * 
-    **/
+     */
     distinct?: Enumerable<ProductsScalarFieldEnum>
   }
 
@@ -1839,46 +1769,39 @@ export namespace Prisma {
   export type ProductsFindManyArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * Filter, which Products to fetch.
-     * 
-    **/
+     */
     where?: ProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Products to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<ProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Products.
-     * 
-    **/
+     */
     cursor?: ProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Products from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Products.
-     * 
-    **/
+     */
     skip?: number
     distinct?: Enumerable<ProductsScalarFieldEnum>
   }
@@ -1890,18 +1813,15 @@ export namespace Prisma {
   export type ProductsCreateArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * The data needed to create a Products.
-     * 
-    **/
+     */
     data: XOR<ProductsCreateInput, ProductsUncheckedCreateInput>
   }
 
@@ -1912,8 +1832,7 @@ export namespace Prisma {
   export type ProductsCreateManyArgs = {
     /**
      * The data used to create many Products.
-     * 
-    **/
+     */
     data: Enumerable<ProductsCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -1925,23 +1844,19 @@ export namespace Prisma {
   export type ProductsUpdateArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * The data needed to update a Products.
-     * 
-    **/
+     */
     data: XOR<ProductsUpdateInput, ProductsUncheckedUpdateInput>
     /**
      * Choose, which Products to update.
-     * 
-    **/
+     */
     where: ProductsWhereUniqueInput
   }
 
@@ -1952,13 +1867,11 @@ export namespace Prisma {
   export type ProductsUpdateManyArgs = {
     /**
      * The data used to update Products.
-     * 
-    **/
+     */
     data: XOR<ProductsUpdateManyMutationInput, ProductsUncheckedUpdateManyInput>
     /**
      * Filter which Products to update
-     * 
-    **/
+     */
     where?: ProductsWhereInput
   }
 
@@ -1969,28 +1882,23 @@ export namespace Prisma {
   export type ProductsUpsertArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * The filter to search for the Products to update in case it exists.
-     * 
-    **/
+     */
     where: ProductsWhereUniqueInput
     /**
      * In case the Products found by the `where` argument doesn't exist, create a new Products with this data.
-     * 
-    **/
+     */
     create: XOR<ProductsCreateInput, ProductsUncheckedCreateInput>
     /**
      * In case the Products was found with the provided `where` argument, update it with this data.
-     * 
-    **/
+     */
     update: XOR<ProductsUpdateInput, ProductsUncheckedUpdateInput>
   }
 
@@ -2001,18 +1909,15 @@ export namespace Prisma {
   export type ProductsDeleteArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
     /**
      * Filter which Products to delete.
-     * 
-    **/
+     */
     where: ProductsWhereUniqueInput
   }
 
@@ -2023,8 +1928,7 @@ export namespace Prisma {
   export type ProductsDeleteManyArgs = {
     /**
      * Filter which Products to delete
-     * 
-    **/
+     */
     where?: ProductsWhereInput
   }
 
@@ -2032,16 +1936,14 @@ export namespace Prisma {
   /**
    * Products.StockDetail
    */
-  export type ProductsStockDetailArgs = {
+  export type Products$StockDetailArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     where?: StokProductsDetailWhereInput
     orderBy?: Enumerable<StokProductsDetailOrderByWithRelationInput>
@@ -2058,13 +1960,11 @@ export namespace Prisma {
   export type ProductsArgs = {
     /**
      * Select specific fields to fetch from the Products
-     * 
-    **/
+     */
     select?: ProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: ProductsInclude | null
   }
 
@@ -2141,36 +2041,31 @@ export namespace Prisma {
   export type StokProductsAggregateArgs = {
     /**
      * Filter which StokProducts to aggregate.
-     * 
-    **/
+     */
     where?: StokProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProducts to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     * 
-    **/
+     */
     cursor?: StokProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProducts from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProducts.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -2206,7 +2101,7 @@ export namespace Prisma {
   export type StokProductsGroupByArgs = {
     where?: StokProductsWhereInput
     orderBy?: Enumerable<StokProductsOrderByWithAggregationInput>
-    by: Array<StokProductsScalarFieldEnum>
+    by: StokProductsScalarFieldEnum[]
     having?: StokProductsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -2228,7 +2123,7 @@ export namespace Prisma {
     _max: StokProductsMaxAggregateOutputType | null
   }
 
-  type GetStokProductsGroupByPayload<T extends StokProductsGroupByArgs> = PrismaPromise<
+  type GetStokProductsGroupByPayload<T extends StokProductsGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickArray<StokProductsGroupByOutputType, T['by']> &
         {
@@ -2245,19 +2140,19 @@ export namespace Prisma {
   export type StokProductsSelect = {
     id?: boolean
     stock_code?: boolean
-    Detail?: boolean | StokProductsDetailArgs
     create_date?: boolean
     update_date?: boolean
     user_create?: boolean
     user_update?: boolean
+    Detail?: boolean | StokProducts$DetailArgs
     _count?: boolean | StokProductsCountOutputTypeArgs
   }
 
 
   export type StokProductsInclude = {
-    Detail?: boolean | StokProductsDetailArgs
+    Detail?: boolean | StokProducts$DetailArgs
     _count?: boolean | StokProductsCountOutputTypeArgs
-  } 
+  }
 
   export type StokProductsGetPayload<S extends boolean | null | undefined | StokProductsArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
@@ -2278,13 +2173,13 @@ export namespace Prisma {
       : StokProducts
 
 
-  type StokProductsCountArgs = Merge<
+  type StokProductsCountArgs = 
     Omit<StokProductsFindManyArgs, 'select' | 'include'> & {
       select?: StokProductsCountAggregateInputType | true
     }
-  >
 
   export interface StokProductsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
     /**
      * Find zero or one StokProducts that matches the filter.
      * @param {StokProductsFindUniqueArgs} args - Arguments to find a StokProducts
@@ -2369,7 +2264,7 @@ export namespace Prisma {
     **/
     findMany<T extends StokProductsFindManyArgs>(
       args?: SelectSubset<T, StokProductsFindManyArgs>
-    ): PrismaPromise<Array<StokProductsGetPayload<T>>>
+    ): Prisma.PrismaPromise<Array<StokProductsGetPayload<T>>>
 
     /**
      * Create a StokProducts.
@@ -2401,7 +2296,7 @@ export namespace Prisma {
     **/
     createMany<T extends StokProductsCreateManyArgs>(
       args?: SelectSubset<T, StokProductsCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Delete a StokProducts.
@@ -2452,7 +2347,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends StokProductsDeleteManyArgs>(
       args?: SelectSubset<T, StokProductsDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more StokProducts.
@@ -2473,7 +2368,7 @@ export namespace Prisma {
     **/
     updateMany<T extends StokProductsUpdateManyArgs>(
       args: SelectSubset<T, StokProductsUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Create or update one StokProducts.
@@ -2511,7 +2406,7 @@ export namespace Prisma {
     **/
     count<T extends StokProductsCountArgs>(
       args?: Subset<T, StokProductsCountArgs>,
-    ): PrismaPromise<
+    ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -2543,7 +2438,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends StokProductsAggregateArgs>(args: Subset<T, StokProductsAggregateArgs>): PrismaPromise<GetStokProductsAggregateType<T>>
+    aggregate<T extends StokProductsAggregateArgs>(args: Subset<T, StokProductsAggregateArgs>): Prisma.PrismaPromise<GetStokProductsAggregateType<T>>
 
     /**
      * Group by StokProducts.
@@ -2620,7 +2515,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, StokProductsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStokProductsGroupByPayload<T> : PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, StokProductsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStokProductsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
@@ -2630,10 +2525,8 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__StokProductsClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
+  export class Prisma__StokProductsClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
-    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -2644,10 +2537,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    Detail<T extends StokProductsDetailArgs= {}>(args?: Subset<T, StokProductsDetailArgs>): PrismaPromise<Array<StokProductsDetailGetPayload<T>>| Null>;
+    Detail<T extends StokProducts$DetailArgs= {}>(args?: Subset<T, StokProducts$DetailArgs>): Prisma.PrismaPromise<Array<StokProductsDetailGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -2682,18 +2575,15 @@ export namespace Prisma {
   export type StokProductsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * Filter, which StokProducts to fetch.
-     * 
-    **/
+     */
     where: StokProductsWhereUniqueInput
   }
 
@@ -2715,18 +2605,15 @@ export namespace Prisma {
   export type StokProductsFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * Filter, which StokProducts to fetch.
-     * 
-    **/
+     */
     where: StokProductsWhereUniqueInput
   }
 
@@ -2737,53 +2624,45 @@ export namespace Prisma {
   export type StokProductsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * Filter, which StokProducts to fetch.
-     * 
-    **/
+     */
     where?: StokProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProducts to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for StokProducts.
-     * 
-    **/
+     */
     cursor?: StokProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProducts from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProducts.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of StokProducts.
-     * 
-    **/
+     */
     distinct?: Enumerable<StokProductsScalarFieldEnum>
   }
 
@@ -2805,53 +2684,45 @@ export namespace Prisma {
   export type StokProductsFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * Filter, which StokProducts to fetch.
-     * 
-    **/
+     */
     where?: StokProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProducts to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for StokProducts.
-     * 
-    **/
+     */
     cursor?: StokProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProducts from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProducts.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of StokProducts.
-     * 
-    **/
+     */
     distinct?: Enumerable<StokProductsScalarFieldEnum>
   }
 
@@ -2862,46 +2733,39 @@ export namespace Prisma {
   export type StokProductsFindManyArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * Filter, which StokProducts to fetch.
-     * 
-    **/
+     */
     where?: StokProductsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProducts to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing StokProducts.
-     * 
-    **/
+     */
     cursor?: StokProductsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProducts from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProducts.
-     * 
-    **/
+     */
     skip?: number
     distinct?: Enumerable<StokProductsScalarFieldEnum>
   }
@@ -2913,18 +2777,15 @@ export namespace Prisma {
   export type StokProductsCreateArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * The data needed to create a StokProducts.
-     * 
-    **/
+     */
     data: XOR<StokProductsCreateInput, StokProductsUncheckedCreateInput>
   }
 
@@ -2935,8 +2796,7 @@ export namespace Prisma {
   export type StokProductsCreateManyArgs = {
     /**
      * The data used to create many StokProducts.
-     * 
-    **/
+     */
     data: Enumerable<StokProductsCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -2948,23 +2808,19 @@ export namespace Prisma {
   export type StokProductsUpdateArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * The data needed to update a StokProducts.
-     * 
-    **/
+     */
     data: XOR<StokProductsUpdateInput, StokProductsUncheckedUpdateInput>
     /**
      * Choose, which StokProducts to update.
-     * 
-    **/
+     */
     where: StokProductsWhereUniqueInput
   }
 
@@ -2975,13 +2831,11 @@ export namespace Prisma {
   export type StokProductsUpdateManyArgs = {
     /**
      * The data used to update StokProducts.
-     * 
-    **/
+     */
     data: XOR<StokProductsUpdateManyMutationInput, StokProductsUncheckedUpdateManyInput>
     /**
      * Filter which StokProducts to update
-     * 
-    **/
+     */
     where?: StokProductsWhereInput
   }
 
@@ -2992,28 +2846,23 @@ export namespace Prisma {
   export type StokProductsUpsertArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * The filter to search for the StokProducts to update in case it exists.
-     * 
-    **/
+     */
     where: StokProductsWhereUniqueInput
     /**
      * In case the StokProducts found by the `where` argument doesn't exist, create a new StokProducts with this data.
-     * 
-    **/
+     */
     create: XOR<StokProductsCreateInput, StokProductsUncheckedCreateInput>
     /**
      * In case the StokProducts was found with the provided `where` argument, update it with this data.
-     * 
-    **/
+     */
     update: XOR<StokProductsUpdateInput, StokProductsUncheckedUpdateInput>
   }
 
@@ -3024,18 +2873,15 @@ export namespace Prisma {
   export type StokProductsDeleteArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
     /**
      * Filter which StokProducts to delete.
-     * 
-    **/
+     */
     where: StokProductsWhereUniqueInput
   }
 
@@ -3046,8 +2892,7 @@ export namespace Prisma {
   export type StokProductsDeleteManyArgs = {
     /**
      * Filter which StokProducts to delete
-     * 
-    **/
+     */
     where?: StokProductsWhereInput
   }
 
@@ -3055,16 +2900,14 @@ export namespace Prisma {
   /**
    * StokProducts.Detail
    */
-  export type StokProductsDetailArgs = {
+  export type StokProducts$DetailArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     where?: StokProductsDetailWhereInput
     orderBy?: Enumerable<StokProductsDetailOrderByWithRelationInput>
@@ -3081,13 +2924,11 @@ export namespace Prisma {
   export type StokProductsArgs = {
     /**
      * Select specific fields to fetch from the StokProducts
-     * 
-    **/
+     */
     select?: StokProductsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsInclude | null
   }
 
@@ -3200,36 +3041,31 @@ export namespace Prisma {
   export type StokProductsDetailAggregateArgs = {
     /**
      * Filter which StokProductsDetail to aggregate.
-     * 
-    **/
+     */
     where?: StokProductsDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProductsDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     * 
-    **/
+     */
     cursor?: StokProductsDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProductsDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProductsDetails.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -3277,7 +3113,7 @@ export namespace Prisma {
   export type StokProductsDetailGroupByArgs = {
     where?: StokProductsDetailWhereInput
     orderBy?: Enumerable<StokProductsDetailOrderByWithAggregationInput>
-    by: Array<StokProductsDetailScalarFieldEnum>
+    by: StokProductsDetailScalarFieldEnum[]
     having?: StokProductsDetailScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -3304,7 +3140,7 @@ export namespace Prisma {
     _max: StokProductsDetailMaxAggregateOutputType | null
   }
 
-  type GetStokProductsDetailGroupByPayload<T extends StokProductsDetailGroupByArgs> = PrismaPromise<
+  type GetStokProductsDetailGroupByPayload<T extends StokProductsDetailGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickArray<StokProductsDetailGroupByOutputType, T['by']> &
         {
@@ -3320,21 +3156,21 @@ export namespace Prisma {
 
   export type StokProductsDetailSelect = {
     id?: boolean
-    StokProducts?: boolean | StokProductsArgs
     stokProductsId?: boolean
-    Products?: boolean | ProductsArgs
     productsId?: boolean
     amont_new_stock?: boolean
     cost_new?: boolean
     amont_old_stock?: boolean
     cost_old?: boolean
+    StokProducts?: boolean | StokProductsArgs
+    Products?: boolean | ProductsArgs
   }
 
 
   export type StokProductsDetailInclude = {
     StokProducts?: boolean | StokProductsArgs
     Products?: boolean | ProductsArgs
-  } 
+  }
 
   export type StokProductsDetailGetPayload<S extends boolean | null | undefined | StokProductsDetailArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
@@ -3355,13 +3191,13 @@ export namespace Prisma {
       : StokProductsDetail
 
 
-  type StokProductsDetailCountArgs = Merge<
+  type StokProductsDetailCountArgs = 
     Omit<StokProductsDetailFindManyArgs, 'select' | 'include'> & {
       select?: StokProductsDetailCountAggregateInputType | true
     }
-  >
 
   export interface StokProductsDetailDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
     /**
      * Find zero or one StokProductsDetail that matches the filter.
      * @param {StokProductsDetailFindUniqueArgs} args - Arguments to find a StokProductsDetail
@@ -3446,7 +3282,7 @@ export namespace Prisma {
     **/
     findMany<T extends StokProductsDetailFindManyArgs>(
       args?: SelectSubset<T, StokProductsDetailFindManyArgs>
-    ): PrismaPromise<Array<StokProductsDetailGetPayload<T>>>
+    ): Prisma.PrismaPromise<Array<StokProductsDetailGetPayload<T>>>
 
     /**
      * Create a StokProductsDetail.
@@ -3478,7 +3314,7 @@ export namespace Prisma {
     **/
     createMany<T extends StokProductsDetailCreateManyArgs>(
       args?: SelectSubset<T, StokProductsDetailCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Delete a StokProductsDetail.
@@ -3529,7 +3365,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends StokProductsDetailDeleteManyArgs>(
       args?: SelectSubset<T, StokProductsDetailDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more StokProductsDetails.
@@ -3550,7 +3386,7 @@ export namespace Prisma {
     **/
     updateMany<T extends StokProductsDetailUpdateManyArgs>(
       args: SelectSubset<T, StokProductsDetailUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Create or update one StokProductsDetail.
@@ -3588,7 +3424,7 @@ export namespace Prisma {
     **/
     count<T extends StokProductsDetailCountArgs>(
       args?: Subset<T, StokProductsDetailCountArgs>,
-    ): PrismaPromise<
+    ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -3620,7 +3456,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends StokProductsDetailAggregateArgs>(args: Subset<T, StokProductsDetailAggregateArgs>): PrismaPromise<GetStokProductsDetailAggregateType<T>>
+    aggregate<T extends StokProductsDetailAggregateArgs>(args: Subset<T, StokProductsDetailAggregateArgs>): Prisma.PrismaPromise<GetStokProductsDetailAggregateType<T>>
 
     /**
      * Group by StokProductsDetail.
@@ -3697,7 +3533,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, StokProductsDetailGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStokProductsDetailGroupByPayload<T> : PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, StokProductsDetailGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStokProductsDetailGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
@@ -3707,10 +3543,8 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__StokProductsDetailClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
+  export class Prisma__StokProductsDetailClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
-    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -3721,8 +3555,8 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
     StokProducts<T extends StokProductsArgs= {}>(args?: Subset<T, StokProductsArgs>): Prisma__StokProductsClient<StokProductsGetPayload<T> | Null>;
 
@@ -3761,18 +3595,15 @@ export namespace Prisma {
   export type StokProductsDetailFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * Filter, which StokProductsDetail to fetch.
-     * 
-    **/
+     */
     where: StokProductsDetailWhereUniqueInput
   }
 
@@ -3794,18 +3625,15 @@ export namespace Prisma {
   export type StokProductsDetailFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * Filter, which StokProductsDetail to fetch.
-     * 
-    **/
+     */
     where: StokProductsDetailWhereUniqueInput
   }
 
@@ -3816,53 +3644,45 @@ export namespace Prisma {
   export type StokProductsDetailFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * Filter, which StokProductsDetail to fetch.
-     * 
-    **/
+     */
     where?: StokProductsDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProductsDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for StokProductsDetails.
-     * 
-    **/
+     */
     cursor?: StokProductsDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProductsDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProductsDetails.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of StokProductsDetails.
-     * 
-    **/
+     */
     distinct?: Enumerable<StokProductsDetailScalarFieldEnum>
   }
 
@@ -3884,53 +3704,45 @@ export namespace Prisma {
   export type StokProductsDetailFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * Filter, which StokProductsDetail to fetch.
-     * 
-    **/
+     */
     where?: StokProductsDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProductsDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for StokProductsDetails.
-     * 
-    **/
+     */
     cursor?: StokProductsDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProductsDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProductsDetails.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of StokProductsDetails.
-     * 
-    **/
+     */
     distinct?: Enumerable<StokProductsDetailScalarFieldEnum>
   }
 
@@ -3941,46 +3753,39 @@ export namespace Prisma {
   export type StokProductsDetailFindManyArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * Filter, which StokProductsDetails to fetch.
-     * 
-    **/
+     */
     where?: StokProductsDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of StokProductsDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<StokProductsDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing StokProductsDetails.
-     * 
-    **/
+     */
     cursor?: StokProductsDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` StokProductsDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` StokProductsDetails.
-     * 
-    **/
+     */
     skip?: number
     distinct?: Enumerable<StokProductsDetailScalarFieldEnum>
   }
@@ -3992,18 +3797,15 @@ export namespace Prisma {
   export type StokProductsDetailCreateArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * The data needed to create a StokProductsDetail.
-     * 
-    **/
+     */
     data: XOR<StokProductsDetailCreateInput, StokProductsDetailUncheckedCreateInput>
   }
 
@@ -4014,8 +3816,7 @@ export namespace Prisma {
   export type StokProductsDetailCreateManyArgs = {
     /**
      * The data used to create many StokProductsDetails.
-     * 
-    **/
+     */
     data: Enumerable<StokProductsDetailCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -4027,23 +3828,19 @@ export namespace Prisma {
   export type StokProductsDetailUpdateArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * The data needed to update a StokProductsDetail.
-     * 
-    **/
+     */
     data: XOR<StokProductsDetailUpdateInput, StokProductsDetailUncheckedUpdateInput>
     /**
      * Choose, which StokProductsDetail to update.
-     * 
-    **/
+     */
     where: StokProductsDetailWhereUniqueInput
   }
 
@@ -4054,13 +3851,11 @@ export namespace Prisma {
   export type StokProductsDetailUpdateManyArgs = {
     /**
      * The data used to update StokProductsDetails.
-     * 
-    **/
+     */
     data: XOR<StokProductsDetailUpdateManyMutationInput, StokProductsDetailUncheckedUpdateManyInput>
     /**
      * Filter which StokProductsDetails to update
-     * 
-    **/
+     */
     where?: StokProductsDetailWhereInput
   }
 
@@ -4071,28 +3866,23 @@ export namespace Prisma {
   export type StokProductsDetailUpsertArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * The filter to search for the StokProductsDetail to update in case it exists.
-     * 
-    **/
+     */
     where: StokProductsDetailWhereUniqueInput
     /**
      * In case the StokProductsDetail found by the `where` argument doesn't exist, create a new StokProductsDetail with this data.
-     * 
-    **/
+     */
     create: XOR<StokProductsDetailCreateInput, StokProductsDetailUncheckedCreateInput>
     /**
      * In case the StokProductsDetail was found with the provided `where` argument, update it with this data.
-     * 
-    **/
+     */
     update: XOR<StokProductsDetailUpdateInput, StokProductsDetailUncheckedUpdateInput>
   }
 
@@ -4103,18 +3893,15 @@ export namespace Prisma {
   export type StokProductsDetailDeleteArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
     /**
      * Filter which StokProductsDetail to delete.
-     * 
-    **/
+     */
     where: StokProductsDetailWhereUniqueInput
   }
 
@@ -4125,8 +3912,7 @@ export namespace Prisma {
   export type StokProductsDetailDeleteManyArgs = {
     /**
      * Filter which StokProductsDetails to delete
-     * 
-    **/
+     */
     where?: StokProductsDetailWhereInput
   }
 
@@ -4137,13 +3923,11 @@ export namespace Prisma {
   export type StokProductsDetailArgs = {
     /**
      * Select specific fields to fetch from the StokProductsDetail
-     * 
-    **/
+     */
     select?: StokProductsDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: StokProductsDetailInclude | null
   }
 
@@ -4166,8 +3950,6 @@ export namespace Prisma {
     price: 'price',
     create_date: 'create_date',
     update_date: 'update_date',
-    deleted_date: 'deleted_date',
-    is_deleted: 'is_deleted',
     user_create: 'user_create',
     user_update: 'user_update'
   };
@@ -4244,8 +4026,6 @@ export namespace Prisma {
     price?: IntFilter | number
     create_date?: DateTimeFilter | Date | string
     update_date?: DateTimeFilter | Date | string
-    deleted_date?: DateTimeNullableFilter | Date | string | null
-    is_deleted?: BoolFilter | boolean
     user_create?: StringFilter | string
     user_update?: StringFilter | string
     StockDetail?: StokProductsDetailListRelationFilter
@@ -4261,8 +4041,6 @@ export namespace Prisma {
     price?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    deleted_date?: SortOrder
-    is_deleted?: SortOrder
     user_create?: SortOrder
     user_update?: SortOrder
     StockDetail?: StokProductsDetailOrderByRelationAggregateInput
@@ -4285,8 +4063,6 @@ export namespace Prisma {
     price?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    deleted_date?: SortOrder
-    is_deleted?: SortOrder
     user_create?: SortOrder
     user_update?: SortOrder
     _count?: ProductsCountOrderByAggregateInput
@@ -4309,8 +4085,6 @@ export namespace Prisma {
     price?: IntWithAggregatesFilter | number
     create_date?: DateTimeWithAggregatesFilter | Date | string
     update_date?: DateTimeWithAggregatesFilter | Date | string
-    deleted_date?: DateTimeNullableWithAggregatesFilter | Date | string | null
-    is_deleted?: BoolWithAggregatesFilter | boolean
     user_create?: StringWithAggregatesFilter | string
     user_update?: StringWithAggregatesFilter | string
   }
@@ -4321,21 +4095,21 @@ export namespace Prisma {
     NOT?: Enumerable<StokProductsWhereInput>
     id?: StringFilter | string
     stock_code?: StringFilter | string
-    Detail?: StokProductsDetailListRelationFilter
     create_date?: DateTimeFilter | Date | string
     update_date?: DateTimeFilter | Date | string
     user_create?: StringFilter | string
     user_update?: StringFilter | string
+    Detail?: StokProductsDetailListRelationFilter
   }
 
   export type StokProductsOrderByWithRelationInput = {
     id?: SortOrder
     stock_code?: SortOrder
-    Detail?: StokProductsDetailOrderByRelationAggregateInput
     create_date?: SortOrder
     update_date?: SortOrder
     user_create?: SortOrder
     user_update?: SortOrder
+    Detail?: StokProductsDetailOrderByRelationAggregateInput
   }
 
   export type StokProductsWhereUniqueInput = {
@@ -4373,26 +4147,26 @@ export namespace Prisma {
     OR?: Enumerable<StokProductsDetailWhereInput>
     NOT?: Enumerable<StokProductsDetailWhereInput>
     id?: StringFilter | string
-    StokProducts?: XOR<StokProductsRelationFilter, StokProductsWhereInput>
     stokProductsId?: StringFilter | string
-    Products?: XOR<ProductsRelationFilter, ProductsWhereInput>
     productsId?: StringFilter | string
     amont_new_stock?: IntFilter | number
     cost_new?: IntFilter | number
     amont_old_stock?: IntFilter | number
     cost_old?: IntFilter | number
+    StokProducts?: XOR<StokProductsRelationFilter, StokProductsWhereInput>
+    Products?: XOR<ProductsRelationFilter, ProductsWhereInput>
   }
 
   export type StokProductsDetailOrderByWithRelationInput = {
     id?: SortOrder
-    StokProducts?: StokProductsOrderByWithRelationInput
     stokProductsId?: SortOrder
-    Products?: ProductsOrderByWithRelationInput
     productsId?: SortOrder
     amont_new_stock?: SortOrder
     cost_new?: SortOrder
     amont_old_stock?: SortOrder
     cost_old?: SortOrder
+    StokProducts?: StokProductsOrderByWithRelationInput
+    Products?: ProductsOrderByWithRelationInput
   }
 
   export type StokProductsDetailWhereUniqueInput = {
@@ -4438,8 +4212,6 @@ export namespace Prisma {
     price?: number
     create_date?: Date | string
     update_date?: Date | string
-    deleted_date?: Date | string | null
-    is_deleted?: boolean
     user_create: string
     user_update: string
     StockDetail?: StokProductsDetailCreateNestedManyWithoutProductsInput
@@ -4455,8 +4227,6 @@ export namespace Prisma {
     price?: number
     create_date?: Date | string
     update_date?: Date | string
-    deleted_date?: Date | string | null
-    is_deleted?: boolean
     user_create: string
     user_update: string
     StockDetail?: StokProductsDetailUncheckedCreateNestedManyWithoutProductsInput
@@ -4472,8 +4242,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    is_deleted?: BoolFieldUpdateOperationsInput | boolean
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
     StockDetail?: StokProductsDetailUpdateManyWithoutProductsNestedInput
@@ -4489,8 +4257,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    is_deleted?: BoolFieldUpdateOperationsInput | boolean
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
     StockDetail?: StokProductsDetailUncheckedUpdateManyWithoutProductsNestedInput
@@ -4506,8 +4272,6 @@ export namespace Prisma {
     price?: number
     create_date?: Date | string
     update_date?: Date | string
-    deleted_date?: Date | string | null
-    is_deleted?: boolean
     user_create: string
     user_update: string
   }
@@ -4522,8 +4286,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    is_deleted?: BoolFieldUpdateOperationsInput | boolean
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
@@ -4538,8 +4300,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    is_deleted?: BoolFieldUpdateOperationsInput | boolean
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
@@ -4547,41 +4307,41 @@ export namespace Prisma {
   export type StokProductsCreateInput = {
     id?: string
     stock_code: string
-    Detail?: StokProductsDetailCreateNestedManyWithoutStokProductsInput
     create_date?: Date | string
     update_date?: Date | string
     user_create: string
     user_update: string
+    Detail?: StokProductsDetailCreateNestedManyWithoutStokProductsInput
   }
 
   export type StokProductsUncheckedCreateInput = {
     id?: string
     stock_code: string
-    Detail?: StokProductsDetailUncheckedCreateNestedManyWithoutStokProductsInput
     create_date?: Date | string
     update_date?: Date | string
     user_create: string
     user_update: string
+    Detail?: StokProductsDetailUncheckedCreateNestedManyWithoutStokProductsInput
   }
 
   export type StokProductsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    Detail?: StokProductsDetailUpdateManyWithoutStokProductsNestedInput
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
+    Detail?: StokProductsDetailUpdateManyWithoutStokProductsNestedInput
   }
 
   export type StokProductsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     stock_code?: StringFieldUpdateOperationsInput | string
-    Detail?: StokProductsDetailUncheckedUpdateManyWithoutStokProductsNestedInput
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
+    Detail?: StokProductsDetailUncheckedUpdateManyWithoutStokProductsNestedInput
   }
 
   export type StokProductsCreateManyInput = {
@@ -4613,12 +4373,12 @@ export namespace Prisma {
 
   export type StokProductsDetailCreateInput = {
     id?: string
-    StokProducts: StokProductsCreateNestedOneWithoutDetailInput
-    Products: ProductsCreateNestedOneWithoutStockDetailInput
     amont_new_stock: number
     cost_new: number
     amont_old_stock: number
     cost_old: number
+    StokProducts: StokProductsCreateNestedOneWithoutDetailInput
+    Products: ProductsCreateNestedOneWithoutStockDetailInput
   }
 
   export type StokProductsDetailUncheckedCreateInput = {
@@ -4633,12 +4393,12 @@ export namespace Prisma {
 
   export type StokProductsDetailUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    StokProducts?: StokProductsUpdateOneRequiredWithoutDetailNestedInput
-    Products?: ProductsUpdateOneRequiredWithoutStockDetailNestedInput
     amont_new_stock?: IntFieldUpdateOperationsInput | number
     cost_new?: IntFieldUpdateOperationsInput | number
     amont_old_stock?: IntFieldUpdateOperationsInput | number
     cost_old?: IntFieldUpdateOperationsInput | number
+    StokProducts?: StokProductsUpdateOneRequiredWithoutDetailNestedInput
+    Products?: ProductsUpdateOneRequiredWithoutStockDetailNestedInput
   }
 
   export type StokProductsDetailUncheckedUpdateInput = {
@@ -4716,22 +4476,6 @@ export namespace Prisma {
     not?: NestedDateTimeFilter | Date | string
   }
 
-  export type DateTimeNullableFilter = {
-    equals?: Date | string | null
-    in?: Enumerable<Date> | Enumerable<string> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | null
-    lt?: Date | string
-    lte?: Date | string
-    gt?: Date | string
-    gte?: Date | string
-    not?: NestedDateTimeNullableFilter | Date | string | null
-  }
-
-  export type BoolFilter = {
-    equals?: boolean
-    not?: NestedBoolFilter | boolean
-  }
-
   export type StokProductsDetailListRelationFilter = {
     every?: StokProductsDetailWhereInput
     some?: StokProductsDetailWhereInput
@@ -4752,8 +4496,6 @@ export namespace Prisma {
     price?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    deleted_date?: SortOrder
-    is_deleted?: SortOrder
     user_create?: SortOrder
     user_update?: SortOrder
   }
@@ -4774,8 +4516,6 @@ export namespace Prisma {
     price?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    deleted_date?: SortOrder
-    is_deleted?: SortOrder
     user_create?: SortOrder
     user_update?: SortOrder
   }
@@ -4790,8 +4530,6 @@ export namespace Prisma {
     price?: SortOrder
     create_date?: SortOrder
     update_date?: SortOrder
-    deleted_date?: SortOrder
-    is_deleted?: SortOrder
     user_create?: SortOrder
     user_update?: SortOrder
   }
@@ -4848,28 +4586,6 @@ export namespace Prisma {
     _count?: NestedIntFilter
     _min?: NestedDateTimeFilter
     _max?: NestedDateTimeFilter
-  }
-
-  export type DateTimeNullableWithAggregatesFilter = {
-    equals?: Date | string | null
-    in?: Enumerable<Date> | Enumerable<string> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | null
-    lt?: Date | string
-    lte?: Date | string
-    gt?: Date | string
-    gte?: Date | string
-    not?: NestedDateTimeNullableWithAggregatesFilter | Date | string | null
-    _count?: NestedIntNullableFilter
-    _min?: NestedDateTimeNullableFilter
-    _max?: NestedDateTimeNullableFilter
-  }
-
-  export type BoolWithAggregatesFilter = {
-    equals?: boolean
-    not?: NestedBoolWithAggregatesFilter | boolean
-    _count?: NestedIntFilter
-    _min?: NestedBoolFilter
-    _max?: NestedBoolFilter
   }
 
   export type StokProductsIdStock_codeUser_createCompoundUniqueInput = {
@@ -4993,14 +4709,6 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type StokProductsDetailUpdateManyWithoutProductsNestedInput = {
@@ -5137,22 +4845,6 @@ export namespace Prisma {
     not?: NestedDateTimeFilter | Date | string
   }
 
-  export type NestedDateTimeNullableFilter = {
-    equals?: Date | string | null
-    in?: Enumerable<Date> | Enumerable<string> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | null
-    lt?: Date | string
-    lte?: Date | string
-    gt?: Date | string
-    gte?: Date | string
-    not?: NestedDateTimeNullableFilter | Date | string | null
-  }
-
-  export type NestedBoolFilter = {
-    equals?: boolean
-    not?: NestedBoolFilter | boolean
-  }
-
   export type NestedStringWithAggregatesFilter = {
     equals?: string
     in?: Enumerable<string>
@@ -5211,46 +4903,13 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter
   }
 
-  export type NestedDateTimeNullableWithAggregatesFilter = {
-    equals?: Date | string | null
-    in?: Enumerable<Date> | Enumerable<string> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | null
-    lt?: Date | string
-    lte?: Date | string
-    gt?: Date | string
-    gte?: Date | string
-    not?: NestedDateTimeNullableWithAggregatesFilter | Date | string | null
-    _count?: NestedIntNullableFilter
-    _min?: NestedDateTimeNullableFilter
-    _max?: NestedDateTimeNullableFilter
-  }
-
-  export type NestedIntNullableFilter = {
-    equals?: number | null
-    in?: Enumerable<number> | null
-    notIn?: Enumerable<number> | null
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntNullableFilter | number | null
-  }
-
-  export type NestedBoolWithAggregatesFilter = {
-    equals?: boolean
-    not?: NestedBoolWithAggregatesFilter | boolean
-    _count?: NestedIntFilter
-    _min?: NestedBoolFilter
-    _max?: NestedBoolFilter
-  }
-
   export type StokProductsDetailCreateWithoutProductsInput = {
     id?: string
-    StokProducts: StokProductsCreateNestedOneWithoutDetailInput
     amont_new_stock: number
     cost_new: number
     amont_old_stock: number
     cost_old: number
+    StokProducts: StokProductsCreateNestedOneWithoutDetailInput
   }
 
   export type StokProductsDetailUncheckedCreateWithoutProductsInput = {
@@ -5303,11 +4962,11 @@ export namespace Prisma {
 
   export type StokProductsDetailCreateWithoutStokProductsInput = {
     id?: string
-    Products: ProductsCreateNestedOneWithoutStockDetailInput
     amont_new_stock: number
     cost_new: number
     amont_old_stock: number
     cost_old: number
+    Products: ProductsCreateNestedOneWithoutStockDetailInput
   }
 
   export type StokProductsDetailUncheckedCreateWithoutStokProductsInput = {
@@ -5378,8 +5037,6 @@ export namespace Prisma {
     price?: number
     create_date?: Date | string
     update_date?: Date | string
-    deleted_date?: Date | string | null
-    is_deleted?: boolean
     user_create: string
     user_update: string
   }
@@ -5394,8 +5051,6 @@ export namespace Prisma {
     price?: number
     create_date?: Date | string
     update_date?: Date | string
-    deleted_date?: Date | string | null
-    is_deleted?: boolean
     user_create: string
     user_update: string
   }
@@ -5443,8 +5098,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    is_deleted?: BoolFieldUpdateOperationsInput | boolean
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
@@ -5459,8 +5112,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     create_date?: DateTimeFieldUpdateOperationsInput | Date | string
     update_date?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    is_deleted?: BoolFieldUpdateOperationsInput | boolean
     user_create?: StringFieldUpdateOperationsInput | string
     user_update?: StringFieldUpdateOperationsInput | string
   }
@@ -5476,11 +5127,11 @@ export namespace Prisma {
 
   export type StokProductsDetailUpdateWithoutProductsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    StokProducts?: StokProductsUpdateOneRequiredWithoutDetailNestedInput
     amont_new_stock?: IntFieldUpdateOperationsInput | number
     cost_new?: IntFieldUpdateOperationsInput | number
     amont_old_stock?: IntFieldUpdateOperationsInput | number
     cost_old?: IntFieldUpdateOperationsInput | number
+    StokProducts?: StokProductsUpdateOneRequiredWithoutDetailNestedInput
   }
 
   export type StokProductsDetailUncheckedUpdateWithoutProductsInput = {
@@ -5512,11 +5163,11 @@ export namespace Prisma {
 
   export type StokProductsDetailUpdateWithoutStokProductsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    Products?: ProductsUpdateOneRequiredWithoutStockDetailNestedInput
     amont_new_stock?: IntFieldUpdateOperationsInput | number
     cost_new?: IntFieldUpdateOperationsInput | number
     amont_old_stock?: IntFieldUpdateOperationsInput | number
     cost_old?: IntFieldUpdateOperationsInput | number
+    Products?: ProductsUpdateOneRequiredWithoutStockDetailNestedInput
   }
 
   export type StokProductsDetailUncheckedUpdateWithoutStokProductsInput = {

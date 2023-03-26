@@ -7,7 +7,7 @@ import {
 } from "../../../domain/modules";
 
 @Module({
-  imports: [OrdersModule, UsersModule, ProductsModule, LoginModule],
-  exports: [OrdersModule, UsersModule, ProductsModule, LoginModule],
+  imports: [UsersModule, ProductsModule, LoginModule, OrdersModule],
+  exports: [UsersModule, ProductsModule, LoginModule, OrdersModule],
 })
 export class ProxyModule {}

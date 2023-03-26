@@ -6,6 +6,10 @@ generator client {
     output   = "../datastore/orders"
 }
 
+generator erd {
+    provider = "prisma-erd-generator"
+}
+
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL_ORDERS")
@@ -14,7 +18,7 @@ datasource db {
 model Orders {
     id          String        @id @default(uuid())
     paymant     PaymentStatus
-    status      StatusOrders
+    status      StatusOrders  @default(Draf)
     remark      String
     customerId  String
     create_date DateTime      @default(now())

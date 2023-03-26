@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ItemProducts } from "../item-products";
+
 class StokcProductDetail {
   @ApiProperty()
   id: string;
