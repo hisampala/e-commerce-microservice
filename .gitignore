@@ -37,3 +37,7 @@ lerna-debug.log*
 ./db/*/*
 ./db
 db
+#datastore
+datastore
+datastore*
+datastore*/**
