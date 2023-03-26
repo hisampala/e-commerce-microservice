@@ -37,5 +37,12 @@ $ npm run build:all
 
 ```bash
 # run  app all
-$ npx pm2 start ecosystem.config.js
+$ npm run all
+```
+
+## Open the browser, go to url
+
+```bash
+$ http://localhost:3000/api
+# Swagger UI Api Document
 ```

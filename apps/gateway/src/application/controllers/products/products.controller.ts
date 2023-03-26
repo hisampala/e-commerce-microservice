@@ -40,21 +40,21 @@ export class ProductsController {
   ) {}
   @Get()
   @ApiBearerAuth()
-  @ApiResponse({ type: ItemProducts, isArray: true })
+  @ApiResponse({ type: ItemProducts, isArray: true, status: "2XX" })
   @UseGuards(JwtAuthGuard)
   async getAll() {
     return this.service.GetAllProducts();
   }
   @Get(":id")
   @ApiBearerAuth()
-  @ApiResponse({ type: ItemProducts })
+  @ApiResponse({ type: ItemProducts, status: "2XX" })
   @UseGuards(JwtAuthGuard)
   async getById(@Param("id") id: string) {
     return this.service.GetProductsById(id);
   }
   @Post()
   @ApiBearerAuth()
-  @ApiResponse({ type: ItemProducts })
+  @ApiResponse({ type: ItemProducts, status: "2XX" })
   @ApiBody({ schema: CreateProductsSchema })
   @UseGuards(JwtAuthGuard)
   async create(@Body() item: CreateProductsDto, @GetUserId() userId: string) {
@@ -63,7 +63,7 @@ export class ProductsController {
   }
   @Put(":id")
   @ApiBearerAuth()
-  @ApiResponse({ type: ItemProducts })
+  @ApiResponse({ type: ItemProducts, status: "2XX" })
   @ApiBody({ schema: UpdateProductsSchema })
   @UseGuards(JwtAuthGuard)
   async update(
@@ -76,7 +76,7 @@ export class ProductsController {
   }
   @Delete(":id")
   @ApiBearerAuth()
-  @ApiResponse({ type: ItemProducts })
+  @ApiResponse({ type: ItemProducts, status: "2XX" })
   @UseGuards(JwtAuthGuard)
   async delete(@Param("id") id: string) {
     return this.service.DeleteProducts(id);
@@ -84,7 +84,7 @@ export class ProductsController {
   @Post("stock")
   @ApiBearerAuth()
   @ApiBody({ schema: CreateStockProductsSchema })
-  @ApiResponse({ type: ItemStock })
+  @ApiResponse({ type: ItemStock, status: "2XX" })
   @ApiTags("Stock")
   @UseGuards(JwtAuthGuard)
   async stock(
@@ -96,7 +96,7 @@ export class ProductsController {
   }
   @Get(":id/stock")
   @ApiBearerAuth()
-  @ApiResponse({ type: ItemStock, isArray: true })
+  @ApiResponse({ type: ItemStock, isArray: true, status: "2XX" })
   @UseGuards(JwtAuthGuard)
   async stockProducts(@Param("id") id: string) {
     return this.service.GetProductsStock(id);

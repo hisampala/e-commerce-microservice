@@ -39,12 +39,10 @@ export class UsersController {
   @ApiResponse({ type: ItemUsers, status: "2XX" })
   @UseGuards(JwtAuthGuard)
   getMe(@GetUserId() id: string) {
-    console.log(id);
-
     return this.service.GetUsersById(id);
   }
 
-  @Get("orders")
+  @Get("orders/history")
   @ApiBearerAuth()
   @ApiResponse({ type: ItemOrders, isArray: true, status: "2XX" })
   @UseGuards(JwtAuthGuard)
@@ -53,7 +51,7 @@ export class UsersController {
   }
   @Put(":id")
   @ApiBearerAuth()
-  @ApiResponse({ type: ItemUsers })
+  @ApiResponse({ type: ItemUsers, status: "2XX" })
   @UseGuards(JwtAuthGuard)
   @ApiBody({
     schema: UpdateUsersSchema,

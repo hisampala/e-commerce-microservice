@@ -23,6 +23,7 @@
     "start:products:prod": "npx copyfiles datastore/products/**/* dist/apps/products & node dist/apps/products/apps/products/src/main",
     "start:orders:prod": "npx copyfiles datastore/orders/**/* dist/apps/orders & node dist/apps/orders/apps/orders/src/main",
     "start:authentication:prod": "npx copyfiles datastore/users/**/* dist/apps/authentication & node dist/apps/authentication/apps/authentication/src/main",
+    "start:all": "pm2 start ecosystem.config.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "migrate:productdb": "npx prisma migrate dev --name=init_products_db --schema=prisma/products.prisma",
     "migrate:orderdb": "npx prisma migrate dev --name=init_orders_db --schema=prisma/orders.prisma",

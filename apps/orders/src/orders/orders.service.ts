@@ -230,7 +230,7 @@ export class OrdersService implements OnModuleInit {
   private async onCancle(item: ItemOrders) {
     const updateStstus = await this.context.orders.update({
       where: { id: item.id },
-      data: { status: "Cancle" },
+      data: { status: "Cancle", remark: item.remark },
       include: { OrderDetail: true },
     });
     return updateStstus;
@@ -275,7 +275,7 @@ export class OrdersService implements OnModuleInit {
       try {
         const updatestatus = await tx.orders.update({
           where: { id: item.id },
-          data: { status: "Refund" },
+          data: { status: "Refund", remark: item.remark },
           include: { OrderDetail: true },
         });
         const UpdateProducts = updatestatus.OrderDetail.map(async (result) => {

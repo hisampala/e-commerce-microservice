@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Param,
   Post,
@@ -42,6 +44,7 @@ export class OrdersController {
   @Get()
   @ApiBearerAuth()
   @ApiResponse({ type: ItemOrders, isArray: true })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   async GetAll() {
     return this.service.GetAllOrders();
@@ -49,6 +52,7 @@ export class OrdersController {
   @Get(":id")
   @ApiBearerAuth()
   @ApiResponse({ type: ItemOrders })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   async GetById(@Param("id") id: string) {
     return this.service.GetOrdersById(id);
@@ -67,6 +71,7 @@ export class OrdersController {
   @ApiBearerAuth()
   @ApiBody({ schema: CompleteOrdersSchema })
   @ApiResponse({ type: ItemOrders })
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async orderComplete(@Body() item: CompleteOrdersDto) {
@@ -76,6 +81,7 @@ export class OrdersController {
   @ApiBearerAuth()
   @ApiBody({ schema: CancleOrdersSchema })
   @ApiResponse({ type: ItemOrders })
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async orderCancle(@Body() item: CancleOrdersDto) {
@@ -85,6 +91,7 @@ export class OrdersController {
   @ApiBearerAuth()
   @ApiBody({ schema: RefundOrdersSchema })
   @ApiResponse({ type: ItemOrders })
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async orderRefund(@Body() item: RefundOrdersDto) {

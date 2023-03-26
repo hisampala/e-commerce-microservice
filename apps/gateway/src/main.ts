@@ -5,7 +5,7 @@ import { patchNestjsSwagger } from "@anatine/zod-nestjs";
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
   const config = new DocumentBuilder()
-    .setTitle("E-Commerce  Wepservice")
+    .setTitle("E-Commerce  Webservice")
     .setDescription("The E-Commerce API description")
     .setVersion("1.0")
     .addBearerAuth()
