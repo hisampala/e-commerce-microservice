@@ -17,7 +17,7 @@ $ npm run  migrate:all
 
 ```
 
-## Running the Prisma Seed for Initail Data
+## Running the dataseed for Initail Data
 
 ```bash
 $ npm run dataseed
