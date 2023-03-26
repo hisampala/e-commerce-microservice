@@ -18,8 +18,9 @@ const {
   Debug,
   objectEnumValues,
   makeStrictEnum,
-  Extensions
-} = require('./runtime/index')
+  Extensions,
+  findSync
+} = require('./runtime/library')
 
 
 const Prisma = {}
@@ -27,11 +28,11 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 4.8.0
+ * Prisma Client JS version: 4.11.0
  * Query Engine version: d6e67a83f971b175a593ccc12e15c4a757f93ffe
  */
 Prisma.prismaVersion = {
-  client: "4.8.0",
+  client: "4.11.0",
   engine: "d6e67a83f971b175a593ccc12e15c4a757f93ffe"
 }
 
@@ -69,7 +70,6 @@ Prisma.NullTypes = {
 
   const path = require('path')
 
-const { findSync } = require('./runtime')
 const fs = require('fs')
 
 // some frameworks or bundlers replace or totally remove __dirname
@@ -80,8 +80,8 @@ const regularDirname = hasDirname && fs.existsSync(path.join(__dirname, 'schema.
 
 // if the client has been bundled, we need to look for the folders
 const foundDirname = !regularDirname && findSync(process.cwd(), [
-    "..\\datastore\\users",
     "datastore\\users",
+    "users",
 ], ['d'], ['d'], 1)[0]
 
 const dirname = regularDirname || foundDirname || __dirname
@@ -177,10 +177,11 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "..\\..\\.env"
+    "rootEnvPath": "..\\..\\.env",
+    "schemaEnvPath": "..\\..\\.env"
   },
   "relativePath": "..\\..\\prisma",
-  "clientVersion": "4.8.0",
+  "clientVersion": "4.11.0",
   "engineVersion": "d6e67a83f971b175a593ccc12e15c4a757f93ffe",
   "datasourceNames": [
     "db"
@@ -188,24 +189,25 @@ const config = {
   "activeProvider": "postgresql",
   "dataProxy": false
 }
-config.document = dmmf
 config.dirname = dirname
+config.document = dmmf
 
 
 
 
-const { warnEnvConflicts } = require('./runtime/index')
+const { warnEnvConflicts } = require('./runtime/library')
 
 warnEnvConflicts({
     rootEnvPath: config.relativeEnvPaths.rootEnvPath && path.resolve(dirname, config.relativeEnvPaths.rootEnvPath),
     schemaEnvPath: config.relativeEnvPaths.schemaEnvPath && path.resolve(dirname, config.relativeEnvPaths.schemaEnvPath)
 })
 
+
 const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 path.join(__dirname, "query_engine-windows.dll.node");
-path.join(process.cwd(), "..\\datastore\\users\\query_engine-windows.dll.node")
+path.join(process.cwd(), "datastore\\users\\query_engine-windows.dll.node")
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "..\\datastore\\users\\schema.prisma")
+path.join(process.cwd(), "datastore\\users\\schema.prisma")

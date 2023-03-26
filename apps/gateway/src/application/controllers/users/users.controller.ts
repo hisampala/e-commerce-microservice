@@ -23,6 +23,7 @@ import {
   UpdateUsersDto,
   UpdateUsersSchema,
 } from "../../../domain/dto/users/update-users.dto";
+import { ItemOrders } from "../../../domain/dto/orders/item-orders";
 
 @Controller(ControllerPath.Users)
 @ApiTags("Users")
@@ -43,6 +44,13 @@ export class UsersController {
     return this.service.GetUsersById(id);
   }
 
+  @Get("orders")
+  @ApiBearerAuth()
+  @ApiResponse({ type: ItemOrders, isArray: true, status: "2XX" })
+  @UseGuards(JwtAuthGuard)
+  getOrders(@GetUserId() id: string) {
+    return this.service.GetOrders(id);
+  }
   @Put(":id")
   @ApiBearerAuth()
   @ApiResponse({ type: ItemUsers })

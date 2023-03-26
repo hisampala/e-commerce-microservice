@@ -1,23 +1,25 @@
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
-import { Provide, UsersEvent } from "@common/core";
+import { OrderEvent, Provide, UsersEvent } from "@common/core";
 import { firstValueFrom } from "rxjs";
 import { CreateUsersDto } from "../../dto/users/create-users.dto";
 import { UpdateUsersDto } from "../../dto/users/update-users.dto";
 import { ItemUsers } from "../../dto/users/item-users.dto";
 import { BadRequestException } from "@nestjs/common";
-import { NatsConnectionImpl } from "nats/lib/nats-base-client/nats";
+import { ItemOrders } from "../../dto/orders/item-orders";
 export interface IUsersProxyService {
   CreateUsers(item: CreateUsersDto): Promise<ItemUsers>;
   UpdateUsers(id: string, item: UpdateUsersDto): Promise<ItemUsers>;
   DeleteUsers(id: string): Promise<ItemUsers>;
   GetAllUsers(): Promise<ItemUsers[]>;
   GetUsersById(id: string): Promise<ItemUsers>;
+  GetOrders(id: string): Promise<ItemOrders[]>;
 }
 @Injectable()
 export class UsersProxyService implements IUsersProxyService {
   constructor(
     @Inject(Provide.Users) private readonly usersClient: ClientProxy,
+    @Inject(Provide.orders) private readonly ordersClient: ClientProxy,
   ) {}
 
   async CreateUsers(item: CreateUsersDto): Promise<ItemUsers> {
@@ -76,6 +78,16 @@ export class UsersProxyService implements IUsersProxyService {
     try {
       const result = await firstValueFrom<ItemUsers>(
         this.usersClient.send(UsersEvent.get_users_by_Id, id),
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async GetOrders(id: string): Promise<ItemOrders[]> {
+    try {
+      const result = await firstValueFrom<ItemOrders[]>(
+        this.usersClient.send(OrderEvent.get_Orders_Customer, id),
       );
       return result;
     } catch (error) {

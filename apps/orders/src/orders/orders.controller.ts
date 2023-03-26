@@ -31,7 +31,11 @@ export class OrdersController {
     new Logger(OrdersController.name).log(JSON.stringify(context.getArgs()));
     return this.ordersService.findAll();
   }
-
+  @MessagePattern(OrderEvent.get_Orders_Customer)
+  findOrderCutomer(@Payload() id: string, @Ctx() context: NatsContext) {
+    new Logger(OrdersController.name).log(JSON.stringify(context.getArgs()));
+    return this.ordersService.OrderCustomer(id);
+  }
   @MessagePattern(OrderEvent.get_Orders_by_Id)
   findOne(@Payload() id: string, @Ctx() context: NatsContext) {
     new Logger(OrdersController.name).log(JSON.stringify(context.getArgs()));

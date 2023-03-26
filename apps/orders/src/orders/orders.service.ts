@@ -193,7 +193,7 @@ export class OrdersService implements OnModuleInit {
       }
       throw new BadRequestException("Fail");
     } catch (error) {
-      throw error;
+      return error;
     }
   }
   private async updateStockProducts(item: Partial<ItemProducts>) {
@@ -294,5 +294,21 @@ export class OrdersService implements OnModuleInit {
         return error;
       }
     });
+  }
+  async OrderCustomer(id: string) {
+    try {
+      const data = await this.context.orders.findMany({
+        where: { customerId: id },
+        include: { OrderDetail: true },
+      });
+      const newData = await Promise.all(
+        data.map(async (result) => {
+          return this.ConvertObjectOrders(result);
+        }),
+      );
+      return newData;
+    } catch (error) {
+      throw error;
+    }
   }
 }

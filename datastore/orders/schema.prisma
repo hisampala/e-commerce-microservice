@@ -6,6 +6,10 @@ generator client {
     output   = "../datastore/orders"
 }
 
+generator erd {
+    provider = "prisma-erd-generator"
+}
+
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL_ORDERS")

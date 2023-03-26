@@ -21,8 +21,6 @@ export class AuthenticationService {
     if (!user) {
       return new BadRequestException("Nofount Email");
     }
-    console.log(user);
-
     const verifyPassword = await verify(user.password, item.password);
     if (!verifyPassword) {
       return new BadRequestException("Password is incorrect");

@@ -3,12 +3,10 @@
  * Client
 **/
 
-import * as runtime from './runtime/index';
-declare const prisma: unique symbol
-export type PrismaPromise<A> = Promise<A> & {[prisma]: true}
+import * as runtime from './runtime/library';
 type UnwrapPromise<P extends any> = P extends Promise<infer R> ? R : P
 type UnwrapTuple<Tuple extends readonly unknown[]> = {
-  [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
+  [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends Prisma.PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
 };
 
 
@@ -129,7 +127,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<number>;
+  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
   /**
    * Executes a raw query and returns the number of affected rows.
@@ -141,7 +139,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<number>;
+  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
   /**
    * Performs a prepared raw query and returns the `SELECT` data.
@@ -152,7 +150,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<T>;
+  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
   /**
    * Performs a raw query and returns the `SELECT` data.
@@ -164,7 +162,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<T>;
+  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 
   /**
    * Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.
@@ -179,9 +177,9 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<UnwrapTuple<P>>;
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<UnwrapTuple<P>>
 
-  $transaction<R>(fn: (prisma: Prisma.TransactionClient) => Promise<R>, options?: {maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel}): Promise<R>;
+  $transaction<R>(fn: (prisma: Omit<this, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<R>
 
       /**
    * `prisma.orders`: Exposes CRUD operations for the **Orders** model.
@@ -206,6 +204,8 @@ export class PrismaClient<
 
 export namespace Prisma {
   export import DMMF = runtime.DMMF
+
+  export type PrismaPromise<T> = runtime.Types.Public.PrismaPromise<T>
 
   /**
    * Prisma Errors
@@ -243,7 +243,7 @@ export namespace Prisma {
 
 
   /**
-   * Prisma Client JS version: 4.8.0
+   * Prisma Client JS version: 4.11.0
    * Query Engine version: d6e67a83f971b175a593ccc12e15c4a757f93ffe
    */
   export type PrismaVersion = {
@@ -608,19 +608,11 @@ export namespace Prisma {
 
   export type Keys<U extends Union> = U extends unknown ? keyof U : never
 
-  type Exact<A, W = unknown> = 
-  W extends unknown ? A extends Narrowable ? Cast<A, W> : Cast<
-  {[K in keyof A]: K extends keyof W ? Exact<A[K], W[K]> : never},
-  {[K in keyof W]: K extends keyof A ? Exact<A[K], W[K]> : W[K]}>
-  : never;
-
-  type Narrowable = string | number | boolean | bigint;
-
   type Cast<A, B> = A extends B ? A : B;
 
   export const type: unique symbol;
 
-  export function validator<V>(): <S>(select: Exact<S, V>) => S;
+  export function validator<V>(): <S>(select: runtime.Types.Utils.LegacyExact<S, V>) => S;
 
   /**
    * Used by group by
@@ -675,15 +667,6 @@ export namespace Prisma {
 
   type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>
 
-  class PrismaClientFetcher {
-    private readonly prisma;
-    private readonly debug;
-    private readonly hooks?;
-    constructor(prisma: PrismaClient<any, any>, debug?: boolean, hooks?: Hooks | undefined);
-    request<T>(document: any, dataPath?: string[], rootField?: string, typeName?: string, isList?: boolean, callsite?: string): Promise<T>;
-    sanitizeMessage(message: string): string;
-    protected unpack(document: any, data: any, path: string[], rootField?: string, isList?: boolean): any;
-  }
 
   export const ModelName: {
     Orders: 'Orders',
@@ -764,10 +747,6 @@ export namespace Prisma {
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
     log?: Array<LogLevel | LogDefinition>
-  }
-
-  export type Hooks = {
-    beforeRequest?: (options: { query: string, path: string[], rootField?: string, typeName?: string, document: any }) => any
   }
 
   /* Types for Logging */
@@ -889,8 +868,7 @@ export namespace Prisma {
   export type OrdersCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the OrdersCountOutputType
-     * 
-    **/
+     */
     select?: OrdersCountOutputTypeSelect | null
   }
 
@@ -977,36 +955,31 @@ export namespace Prisma {
   export type OrdersAggregateArgs = {
     /**
      * Filter which Orders to aggregate.
-     * 
-    **/
+     */
     where?: OrdersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Orders to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrdersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     * 
-    **/
+     */
     cursor?: OrdersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Orders from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Orders.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -1042,7 +1015,7 @@ export namespace Prisma {
   export type OrdersGroupByArgs = {
     where?: OrdersWhereInput
     orderBy?: Enumerable<OrdersOrderByWithAggregationInput>
-    by: Array<OrdersScalarFieldEnum>
+    by: OrdersScalarFieldEnum[]
     having?: OrdersScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -1065,7 +1038,7 @@ export namespace Prisma {
     _max: OrdersMaxAggregateOutputType | null
   }
 
-  type GetOrdersGroupByPayload<T extends OrdersGroupByArgs> = PrismaPromise<
+  type GetOrdersGroupByPayload<T extends OrdersGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickArray<OrdersGroupByOutputType, T['by']> &
         {
@@ -1087,15 +1060,15 @@ export namespace Prisma {
     customerId?: boolean
     create_date?: boolean
     update_date?: boolean
-    OrderDetail?: boolean | OrdersOrderDetailArgs
+    OrderDetail?: boolean | Orders$OrderDetailArgs
     _count?: boolean | OrdersCountOutputTypeArgs
   }
 
 
   export type OrdersInclude = {
-    OrderDetail?: boolean | OrdersOrderDetailArgs
+    OrderDetail?: boolean | Orders$OrderDetailArgs
     _count?: boolean | OrdersCountOutputTypeArgs
-  } 
+  }
 
   export type OrdersGetPayload<S extends boolean | null | undefined | OrdersArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
@@ -1116,13 +1089,13 @@ export namespace Prisma {
       : Orders
 
 
-  type OrdersCountArgs = Merge<
+  type OrdersCountArgs = 
     Omit<OrdersFindManyArgs, 'select' | 'include'> & {
       select?: OrdersCountAggregateInputType | true
     }
-  >
 
   export interface OrdersDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
     /**
      * Find zero or one Orders that matches the filter.
      * @param {OrdersFindUniqueArgs} args - Arguments to find a Orders
@@ -1207,7 +1180,7 @@ export namespace Prisma {
     **/
     findMany<T extends OrdersFindManyArgs>(
       args?: SelectSubset<T, OrdersFindManyArgs>
-    ): PrismaPromise<Array<OrdersGetPayload<T>>>
+    ): Prisma.PrismaPromise<Array<OrdersGetPayload<T>>>
 
     /**
      * Create a Orders.
@@ -1239,7 +1212,7 @@ export namespace Prisma {
     **/
     createMany<T extends OrdersCreateManyArgs>(
       args?: SelectSubset<T, OrdersCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Delete a Orders.
@@ -1290,7 +1263,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends OrdersDeleteManyArgs>(
       args?: SelectSubset<T, OrdersDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Orders.
@@ -1311,7 +1284,7 @@ export namespace Prisma {
     **/
     updateMany<T extends OrdersUpdateManyArgs>(
       args: SelectSubset<T, OrdersUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Orders.
@@ -1349,7 +1322,7 @@ export namespace Prisma {
     **/
     count<T extends OrdersCountArgs>(
       args?: Subset<T, OrdersCountArgs>,
-    ): PrismaPromise<
+    ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -1381,7 +1354,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends OrdersAggregateArgs>(args: Subset<T, OrdersAggregateArgs>): PrismaPromise<GetOrdersAggregateType<T>>
+    aggregate<T extends OrdersAggregateArgs>(args: Subset<T, OrdersAggregateArgs>): Prisma.PrismaPromise<GetOrdersAggregateType<T>>
 
     /**
      * Group by Orders.
@@ -1458,7 +1431,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, OrdersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrdersGroupByPayload<T> : PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, OrdersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrdersGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
@@ -1468,10 +1441,8 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__OrdersClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
+  export class Prisma__OrdersClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
-    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -1482,10 +1453,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    OrderDetail<T extends OrdersOrderDetailArgs= {}>(args?: Subset<T, OrdersOrderDetailArgs>): PrismaPromise<Array<OrderDetailGetPayload<T>>| Null>;
+    OrderDetail<T extends Orders$OrderDetailArgs= {}>(args?: Subset<T, Orders$OrderDetailArgs>): Prisma.PrismaPromise<Array<OrderDetailGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -1520,18 +1491,15 @@ export namespace Prisma {
   export type OrdersFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * Filter, which Orders to fetch.
-     * 
-    **/
+     */
     where: OrdersWhereUniqueInput
   }
 
@@ -1553,18 +1521,15 @@ export namespace Prisma {
   export type OrdersFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * Filter, which Orders to fetch.
-     * 
-    **/
+     */
     where: OrdersWhereUniqueInput
   }
 
@@ -1575,53 +1540,45 @@ export namespace Prisma {
   export type OrdersFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * Filter, which Orders to fetch.
-     * 
-    **/
+     */
     where?: OrdersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Orders to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrdersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Orders.
-     * 
-    **/
+     */
     cursor?: OrdersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Orders from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Orders.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Orders.
-     * 
-    **/
+     */
     distinct?: Enumerable<OrdersScalarFieldEnum>
   }
 
@@ -1643,53 +1600,45 @@ export namespace Prisma {
   export type OrdersFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * Filter, which Orders to fetch.
-     * 
-    **/
+     */
     where?: OrdersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Orders to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrdersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Orders.
-     * 
-    **/
+     */
     cursor?: OrdersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Orders from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Orders.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Orders.
-     * 
-    **/
+     */
     distinct?: Enumerable<OrdersScalarFieldEnum>
   }
 
@@ -1700,46 +1649,39 @@ export namespace Prisma {
   export type OrdersFindManyArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * Filter, which Orders to fetch.
-     * 
-    **/
+     */
     where?: OrdersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Orders to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrdersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Orders.
-     * 
-    **/
+     */
     cursor?: OrdersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Orders from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Orders.
-     * 
-    **/
+     */
     skip?: number
     distinct?: Enumerable<OrdersScalarFieldEnum>
   }
@@ -1751,18 +1693,15 @@ export namespace Prisma {
   export type OrdersCreateArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * The data needed to create a Orders.
-     * 
-    **/
+     */
     data: XOR<OrdersCreateInput, OrdersUncheckedCreateInput>
   }
 
@@ -1773,8 +1712,7 @@ export namespace Prisma {
   export type OrdersCreateManyArgs = {
     /**
      * The data used to create many Orders.
-     * 
-    **/
+     */
     data: Enumerable<OrdersCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -1786,23 +1724,19 @@ export namespace Prisma {
   export type OrdersUpdateArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * The data needed to update a Orders.
-     * 
-    **/
+     */
     data: XOR<OrdersUpdateInput, OrdersUncheckedUpdateInput>
     /**
      * Choose, which Orders to update.
-     * 
-    **/
+     */
     where: OrdersWhereUniqueInput
   }
 
@@ -1813,13 +1747,11 @@ export namespace Prisma {
   export type OrdersUpdateManyArgs = {
     /**
      * The data used to update Orders.
-     * 
-    **/
+     */
     data: XOR<OrdersUpdateManyMutationInput, OrdersUncheckedUpdateManyInput>
     /**
      * Filter which Orders to update
-     * 
-    **/
+     */
     where?: OrdersWhereInput
   }
 
@@ -1830,28 +1762,23 @@ export namespace Prisma {
   export type OrdersUpsertArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * The filter to search for the Orders to update in case it exists.
-     * 
-    **/
+     */
     where: OrdersWhereUniqueInput
     /**
      * In case the Orders found by the `where` argument doesn't exist, create a new Orders with this data.
-     * 
-    **/
+     */
     create: XOR<OrdersCreateInput, OrdersUncheckedCreateInput>
     /**
      * In case the Orders was found with the provided `where` argument, update it with this data.
-     * 
-    **/
+     */
     update: XOR<OrdersUpdateInput, OrdersUncheckedUpdateInput>
   }
 
@@ -1862,18 +1789,15 @@ export namespace Prisma {
   export type OrdersDeleteArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
     /**
      * Filter which Orders to delete.
-     * 
-    **/
+     */
     where: OrdersWhereUniqueInput
   }
 
@@ -1884,8 +1808,7 @@ export namespace Prisma {
   export type OrdersDeleteManyArgs = {
     /**
      * Filter which Orders to delete
-     * 
-    **/
+     */
     where?: OrdersWhereInput
   }
 
@@ -1893,16 +1816,14 @@ export namespace Prisma {
   /**
    * Orders.OrderDetail
    */
-  export type OrdersOrderDetailArgs = {
+  export type Orders$OrderDetailArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     where?: OrderDetailWhereInput
     orderBy?: Enumerable<OrderDetailOrderByWithRelationInput>
@@ -1919,13 +1840,11 @@ export namespace Prisma {
   export type OrdersArgs = {
     /**
      * Select specific fields to fetch from the Orders
-     * 
-    **/
+     */
     select?: OrdersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrdersInclude | null
   }
 
@@ -2028,36 +1947,31 @@ export namespace Prisma {
   export type OrderDetailAggregateArgs = {
     /**
      * Filter which OrderDetail to aggregate.
-     * 
-    **/
+     */
     where?: OrderDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of OrderDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrderDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     * 
-    **/
+     */
     cursor?: OrderDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` OrderDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` OrderDetails.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -2105,7 +2019,7 @@ export namespace Prisma {
   export type OrderDetailGroupByArgs = {
     where?: OrderDetailWhereInput
     orderBy?: Enumerable<OrderDetailOrderByWithAggregationInput>
-    by: Array<OrderDetailScalarFieldEnum>
+    by: OrderDetailScalarFieldEnum[]
     having?: OrderDetailScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -2131,7 +2045,7 @@ export namespace Prisma {
     _max: OrderDetailMaxAggregateOutputType | null
   }
 
-  type GetOrderDetailGroupByPayload<T extends OrderDetailGroupByArgs> = PrismaPromise<
+  type GetOrderDetailGroupByPayload<T extends OrderDetailGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickArray<OrderDetailGroupByOutputType, T['by']> &
         {
@@ -2158,7 +2072,7 @@ export namespace Prisma {
 
   export type OrderDetailInclude = {
     Order?: boolean | OrdersArgs
-  } 
+  }
 
   export type OrderDetailGetPayload<S extends boolean | null | undefined | OrderDetailArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
@@ -2177,13 +2091,13 @@ export namespace Prisma {
       : OrderDetail
 
 
-  type OrderDetailCountArgs = Merge<
+  type OrderDetailCountArgs = 
     Omit<OrderDetailFindManyArgs, 'select' | 'include'> & {
       select?: OrderDetailCountAggregateInputType | true
     }
-  >
 
   export interface OrderDetailDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
     /**
      * Find zero or one OrderDetail that matches the filter.
      * @param {OrderDetailFindUniqueArgs} args - Arguments to find a OrderDetail
@@ -2268,7 +2182,7 @@ export namespace Prisma {
     **/
     findMany<T extends OrderDetailFindManyArgs>(
       args?: SelectSubset<T, OrderDetailFindManyArgs>
-    ): PrismaPromise<Array<OrderDetailGetPayload<T>>>
+    ): Prisma.PrismaPromise<Array<OrderDetailGetPayload<T>>>
 
     /**
      * Create a OrderDetail.
@@ -2300,7 +2214,7 @@ export namespace Prisma {
     **/
     createMany<T extends OrderDetailCreateManyArgs>(
       args?: SelectSubset<T, OrderDetailCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Delete a OrderDetail.
@@ -2351,7 +2265,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends OrderDetailDeleteManyArgs>(
       args?: SelectSubset<T, OrderDetailDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more OrderDetails.
@@ -2372,7 +2286,7 @@ export namespace Prisma {
     **/
     updateMany<T extends OrderDetailUpdateManyArgs>(
       args: SelectSubset<T, OrderDetailUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
+    ): Prisma.PrismaPromise<BatchPayload>
 
     /**
      * Create or update one OrderDetail.
@@ -2410,7 +2324,7 @@ export namespace Prisma {
     **/
     count<T extends OrderDetailCountArgs>(
       args?: Subset<T, OrderDetailCountArgs>,
-    ): PrismaPromise<
+    ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -2442,7 +2356,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends OrderDetailAggregateArgs>(args: Subset<T, OrderDetailAggregateArgs>): PrismaPromise<GetOrderDetailAggregateType<T>>
+    aggregate<T extends OrderDetailAggregateArgs>(args: Subset<T, OrderDetailAggregateArgs>): Prisma.PrismaPromise<GetOrderDetailAggregateType<T>>
 
     /**
      * Group by OrderDetail.
@@ -2519,7 +2433,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, OrderDetailGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderDetailGroupByPayload<T> : PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, OrderDetailGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderDetailGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
@@ -2529,10 +2443,8 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__OrderDetailClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
+  export class Prisma__OrderDetailClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
-    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -2543,8 +2455,8 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
     Order<T extends OrdersArgs= {}>(args?: Subset<T, OrdersArgs>): Prisma__OrdersClient<OrdersGetPayload<T> | Null>;
 
@@ -2581,18 +2493,15 @@ export namespace Prisma {
   export type OrderDetailFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * Filter, which OrderDetail to fetch.
-     * 
-    **/
+     */
     where: OrderDetailWhereUniqueInput
   }
 
@@ -2614,18 +2523,15 @@ export namespace Prisma {
   export type OrderDetailFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * Filter, which OrderDetail to fetch.
-     * 
-    **/
+     */
     where: OrderDetailWhereUniqueInput
   }
 
@@ -2636,53 +2542,45 @@ export namespace Prisma {
   export type OrderDetailFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * Filter, which OrderDetail to fetch.
-     * 
-    **/
+     */
     where?: OrderDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of OrderDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrderDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for OrderDetails.
-     * 
-    **/
+     */
     cursor?: OrderDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` OrderDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` OrderDetails.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of OrderDetails.
-     * 
-    **/
+     */
     distinct?: Enumerable<OrderDetailScalarFieldEnum>
   }
 
@@ -2704,53 +2602,45 @@ export namespace Prisma {
   export type OrderDetailFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * Filter, which OrderDetail to fetch.
-     * 
-    **/
+     */
     where?: OrderDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of OrderDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrderDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for OrderDetails.
-     * 
-    **/
+     */
     cursor?: OrderDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` OrderDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` OrderDetails.
-     * 
-    **/
+     */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of OrderDetails.
-     * 
-    **/
+     */
     distinct?: Enumerable<OrderDetailScalarFieldEnum>
   }
 
@@ -2761,46 +2651,39 @@ export namespace Prisma {
   export type OrderDetailFindManyArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * Filter, which OrderDetails to fetch.
-     * 
-    **/
+     */
     where?: OrderDetailWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of OrderDetails to fetch.
-     * 
-    **/
+     */
     orderBy?: Enumerable<OrderDetailOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing OrderDetails.
-     * 
-    **/
+     */
     cursor?: OrderDetailWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` OrderDetails from the position of the cursor.
-     * 
-    **/
+     */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` OrderDetails.
-     * 
-    **/
+     */
     skip?: number
     distinct?: Enumerable<OrderDetailScalarFieldEnum>
   }
@@ -2812,18 +2695,15 @@ export namespace Prisma {
   export type OrderDetailCreateArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * The data needed to create a OrderDetail.
-     * 
-    **/
+     */
     data: XOR<OrderDetailCreateInput, OrderDetailUncheckedCreateInput>
   }
 
@@ -2834,8 +2714,7 @@ export namespace Prisma {
   export type OrderDetailCreateManyArgs = {
     /**
      * The data used to create many OrderDetails.
-     * 
-    **/
+     */
     data: Enumerable<OrderDetailCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -2847,23 +2726,19 @@ export namespace Prisma {
   export type OrderDetailUpdateArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * The data needed to update a OrderDetail.
-     * 
-    **/
+     */
     data: XOR<OrderDetailUpdateInput, OrderDetailUncheckedUpdateInput>
     /**
      * Choose, which OrderDetail to update.
-     * 
-    **/
+     */
     where: OrderDetailWhereUniqueInput
   }
 
@@ -2874,13 +2749,11 @@ export namespace Prisma {
   export type OrderDetailUpdateManyArgs = {
     /**
      * The data used to update OrderDetails.
-     * 
-    **/
+     */
     data: XOR<OrderDetailUpdateManyMutationInput, OrderDetailUncheckedUpdateManyInput>
     /**
      * Filter which OrderDetails to update
-     * 
-    **/
+     */
     where?: OrderDetailWhereInput
   }
 
@@ -2891,28 +2764,23 @@ export namespace Prisma {
   export type OrderDetailUpsertArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * The filter to search for the OrderDetail to update in case it exists.
-     * 
-    **/
+     */
     where: OrderDetailWhereUniqueInput
     /**
      * In case the OrderDetail found by the `where` argument doesn't exist, create a new OrderDetail with this data.
-     * 
-    **/
+     */
     create: XOR<OrderDetailCreateInput, OrderDetailUncheckedCreateInput>
     /**
      * In case the OrderDetail was found with the provided `where` argument, update it with this data.
-     * 
-    **/
+     */
     update: XOR<OrderDetailUpdateInput, OrderDetailUncheckedUpdateInput>
   }
 
@@ -2923,18 +2791,15 @@ export namespace Prisma {
   export type OrderDetailDeleteArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
     /**
      * Filter which OrderDetail to delete.
-     * 
-    **/
+     */
     where: OrderDetailWhereUniqueInput
   }
 
@@ -2945,8 +2810,7 @@ export namespace Prisma {
   export type OrderDetailDeleteManyArgs = {
     /**
      * Filter which OrderDetails to delete
-     * 
-    **/
+     */
     where?: OrderDetailWhereInput
   }
 
@@ -2957,13 +2821,11 @@ export namespace Prisma {
   export type OrderDetailArgs = {
     /**
      * Select specific fields to fetch from the OrderDetail
-     * 
-    **/
+     */
     select?: OrderDetailSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     * 
-    **/
+     */
     include?: OrderDetailInclude | null
   }
 

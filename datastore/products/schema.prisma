@@ -12,20 +12,18 @@ datasource db {
 }
 
 model Products {
-    id           String               @id @default(uuid()) @map("_id")
-    name         String               @unique
-    sku          String               @unique
-    bar_code     String               @unique
-    amount       Int                  @default(0)
-    cost         Int                  @default(0)
-    price        Int                  @default(0)
-    create_date  DateTime             @default(now())
-    update_date  DateTime             @updatedAt
-    deleted_date DateTime?
-    is_deleted   Boolean              @default(false)
-    user_create  String
-    user_update  String
-    StockDetail  StokProductsDetail[]
+    id          String               @id @default(uuid()) @map("_id")
+    name        String               @unique
+    sku         String               @unique
+    bar_code    String               @unique
+    amount      Int                  @default(0)
+    cost        Int                  @default(0)
+    price       Int                  @default(0)
+    create_date DateTime             @default(now())
+    update_date DateTime             @updatedAt
+    user_create String
+    user_update String
+    StockDetail StokProductsDetail[]
 
     @@index([id, name, sku, bar_code, user_create])
 }
