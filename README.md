@@ -13,9 +13,7 @@ $ Docker-compose up -d
 ## Running the Prisma migrate for create database
 
 ```bash
-$ npm run  migrate:productdb
-$ npm run  migrate:orderdb
-$ npm run  migrate:usersdb
+$ npm run  migrate:all
 
 ```
 
