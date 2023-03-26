@@ -38,7 +38,6 @@ $ npm run build:all
 ## Running the app
 
 ```bash
-# build app all
-$ npm run build:all
+# run  app all
 $ npx pm2 start ecosystem.config.js
 ```
