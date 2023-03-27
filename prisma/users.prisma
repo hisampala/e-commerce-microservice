@@ -17,6 +17,7 @@ model Users {
   last_name         String
   email             String           @unique
   password          String
+  phone_number      String           @unique
   create_date       DateTime?        @default(now())
   update_date       DateTime?        @updatedAt
   Address           Address?         @relation(fields: [addressId], references: [id])

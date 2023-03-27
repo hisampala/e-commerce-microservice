@@ -25,6 +25,7 @@ export class UsersService implements OnModuleInit {
           last_name: createUserDto.last_name,
           email: createUserDto.email,
           password: createUserDto.password,
+          phone_number: createUserDto.phone_number,
         },
         include: UsersOption.include,
       });

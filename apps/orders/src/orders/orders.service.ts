@@ -29,39 +29,41 @@ export class OrdersService implements OnModuleInit {
   }
   async create(createOrderDto: CreateOrderDto) {
     try {
-      const customer = await this.getCustomer(createOrderDto.customerId);
       return await this.context.$transaction(async (tx) => {
+        const customer = await this.getCustomer(createOrderDto.customerId);
+        const createOrder = await tx.orders.create({
+          data: {
+            customerId: customer.id,
+            paymant: createOrderDto.paymant,
+            remark: createOrderDto.remark,
+            status: createOrderDto.status,
+          },
+          include: { OrderDetail: true },
+        });
         try {
-          const createOrder = await tx.orders.create({
-            data: {
-              customerId: customer.id,
-              paymant: createOrderDto.paymant,
-              remark: createOrderDto.remark,
-              status: createOrderDto.status,
-            },
-            include: { OrderDetail: true },
-          });
           const CreateorderDetail = createOrderDto.Detail.map(
             async (detail) => {
-              const products = await this.GetProductsById(detail.productId);
-              detail.orderId = createOrder.id;
-              detail.amount = detail.amount;
-              detail.cost = products.cost;
-              detail.price = products.price;
-              return tx.orderDetail.create({ data: detail });
+              try {
+                const products = await this.GetProductsById(detail.productId);
+                detail.orderId = createOrder.id;
+                detail.amount = detail.amount;
+                detail.cost = products.cost;
+                detail.price = products.price;
+                return tx.orderDetail.create({ data: detail });
+              } catch (error) {
+                throw error;
+              }
             },
           );
           const OrderDetail = await Promise.all(CreateorderDetail);
           createOrder.OrderDetail = OrderDetail;
           return createOrder;
         } catch (error) {
-          console.log(error);
+          await tx.orders.delete({ where: { id: createOrder.id } });
           return error;
         }
       });
     } catch (error) {
-      console.log(error);
-
       throw error;
     }
   }
@@ -245,6 +247,7 @@ export class OrdersService implements OnModuleInit {
     newOrderForm.paymant = result.paymant;
     newOrderForm.remark = result.remark;
     newOrderForm.status = result.status;
+    newOrderForm.create_date = result.create_date.toISOString();
     newOrderForm.Detail = await Promise.all(
       result.OrderDetail.map(async (detail) => {
         const product = await this.GetProductsById(detail.productId);
@@ -267,7 +270,10 @@ export class OrdersService implements OnModuleInit {
     newOrderForm.totol_product_count = newOrderForm.Detail.length;
     newOrderForm.customerId = result.customerId;
     newOrderForm.Customer = await this.getCustomer(result.customerId);
-
+    delete newOrderForm.Customer.Address["create_date"];
+    delete newOrderForm.Customer.Address["update_date"];
+    delete newOrderForm.Customer.DeliveryAddress["create_date"];
+    delete newOrderForm.Customer.DeliveryAddress["update_date"];
     return newOrderForm;
   }
   private async onRefund(item: ItemOrders) {

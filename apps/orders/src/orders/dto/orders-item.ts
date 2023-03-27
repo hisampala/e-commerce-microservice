@@ -19,5 +19,6 @@ export class ItemOrders {
   total_price: number;
   total_amount: number;
   totol_product_count: number;
+  create_date: string;
   Detail: Detail[];
 }

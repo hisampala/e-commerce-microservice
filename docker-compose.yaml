@@ -10,6 +10,7 @@ services:
       - ./streamdata:/data
   postgres:
     container_name: postgres_container
+    restart: always
     image: postgres
     volumes:
       - ./db:/var/lib/postgresql/data

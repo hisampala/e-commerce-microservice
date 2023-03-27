@@ -10,6 +10,7 @@ async function main() {
       last_name: "User001",
       email: "user001@gmail.com",
       password: hashSync("123456"),
+      phone_number: "0900000000",
       Address: {
         create: {
           address: "99/99",
